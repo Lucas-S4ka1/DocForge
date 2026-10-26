@@ -8,6 +8,8 @@ import { registerIpc } from './ipc'
 import { buildMenu } from './menu'
 import { loadSettings } from './settings-store'
 import { hardenSession, hardenWebContents } from './security'
+import { initDatabase, shutdownDatabase, startAutoBackup } from './db/service'
+import { registerPhotoProtocol, registerPhotoScheme } from './photo-protocol'
 
 const isDev = !app.isPackaged
 const devServerUrl = process.env['ELECTRON_RENDERER_URL']
@@ -60,10 +62,23 @@ if (!app.requestSingleInstanceLock()) {
     }
   })
 
-  app.whenReady().then(() => {
+  registerPhotoScheme()
+
+  app.whenReady().then(async () => {
     app.setAppUserModelId('works.pj.docforge')
     hardenSession()
+    try {
+      await initDatabase()
+    } catch (e) {
+      // Ohne Datenbank kann die App nicht sinnvoll laufen → klare Meldung statt stillem Fehler
+      const { dialog } = await import('electron')
+      dialog.showErrorBox('DocForge', `Die lokale Datenbank konnte nicht geöffnet werden.\n\n${e instanceof Error ? e.message : ''}`)
+      app.quit()
+      return
+    }
+    registerPhotoProtocol()
     registerIpc()
+    startAutoBackup()
     buildMenu(loadSettings().language)
     createMainWindow()
 
@@ -71,6 +86,8 @@ if (!app.requestSingleInstanceLock()) {
       if (BrowserWindow.getAllWindows().length === 0) createMainWindow()
     })
   })
+
+  app.on('will-quit', () => shutdownDatabase())
 
   app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit()

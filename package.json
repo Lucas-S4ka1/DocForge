@@ -14,7 +14,9 @@
     "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
     "dist": "npm run build && electron-builder",
     "dist:win": "npm run build && electron-builder --win",
-    "dist:mac": "npm run build && electron-builder --mac"
+    "dist:mac": "npm run build && electron-builder --mac",
+    "postinstall": "electron-builder install-app-deps",
+    "test": "cross-env ELECTRON_RUN_AS_NODE=1 electron node_modules/vitest/vitest.mjs run"
   },
   "dependencies": {
     "@fontsource/barlow": "^5.2.6",
@@ -22,24 +24,29 @@
     "@fontsource/exo-2": "^5.2.6",
     "@fontsource/inter": "^5.2.6",
     "@fontsource/rajdhani": "^5.2.6",
+    "better-sqlite3": "~12.11.1",
     "i18next": "^25.5.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-i18next": "^15.7.0",
+    "zod": "^4.6.7",
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^22.18.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
     "@vitejs/plugin-react": "^5.1.0",
     "autoprefixer": "^10.4.21",
-    "electron": "^44.9.0",
+    "cross-env": "^10.1.0",
+    "electron": "~42.11.18",
     "electron-builder": "^26.0.12",
     "electron-vite": "^5.0.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
     "typescript": "~5.9.2",
-    "vite": "^7.1.0"
+    "vite": "^7.1.0",
+    "vitest": "^3.2.7"
   }
 }

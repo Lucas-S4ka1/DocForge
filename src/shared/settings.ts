@@ -23,6 +23,10 @@ export interface AppSettings {
   checkUpdatesOnStart: boolean
   /** Gewähltes Claude-Modell für die Befehlsleiste (Phase 5). */
   claudeModel: string
+  /** Zielordner für Backups ('' = Standard: <Nutzerdaten>/backups). */
+  backupFolder: string
+  /** Aktives Profil (Person), für Hub und Filter. */
+  activeProfileId: number | null
 }
 
 export const defaultSettings: AppSettings = {
@@ -35,7 +39,9 @@ export const defaultSettings: AppSettings = {
   fontPair: 'design',
   autoBackup: 'weekly',
   checkUpdatesOnStart: true,
-  claudeModel: 'claude-sonnet-5-5'
+  claudeModel: 'claude-sonnet-5-5',
+  backupFolder: '',
+  activeProfileId: null
 }
 
 /** Prüft und bereinigt teilweise/unbekannte Einstellungen (z. B. aus einer alten Datei). */
@@ -56,6 +62,8 @@ export function sanitizeSettings(input: unknown): AppSettings {
     fontPair: pick('fontPair', oneOf('design', 'rajdhani', 'exo')),
     autoBackup: pick('autoBackup', oneOf('off', 'daily', 'weekly')),
     checkUpdatesOnStart: pick('checkUpdatesOnStart', isBool),
-    claudeModel: pick('claudeModel', (v) => typeof v === 'string' && v.length > 0 && v.length < 100)
+    claudeModel: pick('claudeModel', (v) => typeof v === 'string' && v.length > 0 && v.length < 100),
+    backupFolder: pick('backupFolder', (v) => typeof v === 'string' && v.length < 1000),
+    activeProfileId: pick('activeProfileId', (v) => v === null || (typeof v === 'number' && Number.isInteger(v) && v > 0))
   }
 }

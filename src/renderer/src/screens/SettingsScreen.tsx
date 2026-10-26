@@ -2,7 +2,13 @@
  * Einstellungen: Darstellung, Speicher & Backup, KI, Updates, About.
  * Darstellung/Sprache sind in Phase 1 voll funktionsfähig und werden lokal gespeichert.
  */
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { ConfirmDialog } from '@/components/ui/Modal'
+import { mutate, useQuery } from '@/store/db'
+import { toast } from '@/store/toast'
+import { formatBytes, formatDateTime } from '@/lib/format'
+import { useAction } from './archive/common'
 import { useApp } from '@/store/app'
 import { languages } from '@/i18n'
 import { Panel } from '@/components/ui/Panel'
@@ -15,6 +21,26 @@ export function SettingsScreen() {
   const settings = useApp((s) => s.settings)
   const update = useApp((s) => s.updateSettings)
   const dataPath = useApp((s) => s.info?.dataPath ?? '')
+  const run = useAction()
+  const info = useQuery(() => window.docforge.archive.info(), []).data
+  const [confirmRestore, setConfirmRestore] = useState(false)
+  const lang = settings.language
+
+  const backupNow = () =>
+    run(async () => {
+      const r = await mutate(() => window.docforge.archive.backupNow())
+      toast.success(t('archive.backupCreated', { size: formatBytes(r.sizeBytes) }))
+    })
+  const restore = () =>
+    run(async () => {
+      const r = await mutate(() => window.docforge.archive.restoreBackup())
+      if (r) toast.success(t('settings.restored'))
+    })
+  const chooseFolder = () =>
+    run(async () => {
+      const dir = await window.docforge.archive.chooseBackupFolder()
+      if (dir) await update({ backupFolder: dir })
+    })
 
   return (
     <main className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-[30px] py-[26px]">
@@ -110,14 +136,31 @@ export function SettingsScreen() {
                 ]}
               />
             </Field>
-            <div className="flex gap-2">
-              <button type="button" className="btn btn-primary" disabled title={t('common.comingInPhase', { phase: 2 })}>
+            <Field label={t('settings.backupFolder')}>
+              <div className="flex gap-2">
+                <div className="input flex items-center truncate font-mono text-[13px]" title={settings.backupFolder || `${dataPath}/backups`}>
+                  {settings.backupFolder || `${dataPath}/backups`}
+                </div>
+                <button type="button" className="btn flex-none" onClick={chooseFolder}>
+                  {t('settings.change')}
+                </button>
+              </div>
+            </Field>
+            <div className="flex flex-wrap gap-2">
+              <button type="button" className="btn btn-primary" onClick={backupNow}>
                 {t('settings.backupNow')}
               </button>
-              <button type="button" className="btn" disabled title={t('common.comingInPhase', { phase: 2 })}>
+              <button type="button" className="btn" onClick={() => setConfirmRestore(true)}>
                 {t('settings.restore')}
               </button>
+              <button type="button" className="btn btn-ghost" onClick={() => void window.docforge.archive.openBackupFolder()}>
+                {t('settings.openFolder')}
+              </button>
             </div>
+            <span className="font-mono text-[12px] text-accent-400">
+              {t('archive.lastBackup')} {info?.lastBackupAt ? formatDateTime(info.lastBackupAt, lang) : t('archive.never')}
+              {info ? ` · DB ${formatBytes(info.sizeBytes)} · Schema v${info.schemaVersion}` : ''}
+            </span>
             <p className="m-0 text-[12px] text-accent-400">{t('settings.privacy')}</p>
           </Panel>
 
@@ -145,6 +188,18 @@ export function SettingsScreen() {
         {/* About */}
         <AboutContent />
       </div>
+      {confirmRestore && (
+        <ConfirmDialog
+          title={t('settings.restoreTitle')}
+          text={t('settings.restoreText')}
+          confirmLabel={t('settings.restoreConfirm')}
+          onCancel={() => setConfirmRestore(false)}
+          onConfirm={() => {
+            setConfirmRestore(false)
+            void restore()
+          }}
+        />
+      )}
     </main>
   )
 }

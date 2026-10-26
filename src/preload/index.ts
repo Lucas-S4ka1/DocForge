@@ -4,7 +4,19 @@
  * Es wird nie `ipcRenderer` selbst durchgereicht.
  */
 import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron'
-import { IpcChannels, type DocForgeApi, type MenuAction } from '@shared/ipc'
+import { IpcChannels, dbMethodNames, type DbApi, type DocForgeApi, type MenuAction } from '@shared/ipc'
+
+/** Baut aus der Allowlist typisierte Proxys: db.applications.list(…) → invoke('db:call', 'applications', 'list', […]) */
+function buildDbApi(): DbApi {
+  const api: Record<string, Record<string, (...args: unknown[]) => Promise<unknown>>> = {}
+  for (const [ns, methods] of Object.entries(dbMethodNames)) {
+    api[ns] = {}
+    for (const m of methods as string[]) {
+      api[ns][m] = (...args: unknown[]) => ipcRenderer.invoke(IpcChannels.dbCall, ns, m, args)
+    }
+  }
+  return api as unknown as DbApi
+}
 
 const api: DocForgeApi = {
   app: {
@@ -14,6 +26,21 @@ const api: DocForgeApi = {
   settings: {
     get: () => ipcRenderer.invoke(IpcChannels.settingsGet),
     set: (patch) => ipcRenderer.invoke(IpcChannels.settingsSet, patch)
+  },
+  db: buildDbApi(),
+  archive: {
+    info: () => ipcRenderer.invoke(IpcChannels.archiveInfo),
+    backupNow: () => ipcRenderer.invoke(IpcChannels.archiveBackupNow),
+    exportBackup: () => ipcRenderer.invoke(IpcChannels.archiveExport),
+    restoreBackup: () => ipcRenderer.invoke(IpcChannels.archiveRestore),
+    chooseBackupFolder: () => ipcRenderer.invoke(IpcChannels.archiveChooseBackupFolder),
+    openBackupFolder: () => ipcRenderer.invoke(IpcChannels.archiveOpenBackupFolder),
+    seedDemo: () => ipcRenderer.invoke(IpcChannels.archiveSeedDemo)
+  },
+  onDbChanged: (cb) => {
+    const listener = () => cb()
+    ipcRenderer.on(IpcChannels.dbChanged, listener)
+    return () => ipcRenderer.removeListener(IpcChannels.dbChanged, listener)
   },
   onMenuAction: (cb) => {
     const listener = (_e: IpcRendererEvent, action: MenuAction) => cb(action)

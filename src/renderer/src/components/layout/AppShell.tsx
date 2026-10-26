@@ -4,10 +4,11 @@
 import { useApp } from '@/store/app'
 import { Sidebar } from './Sidebar'
 import { AboutDialog } from './AboutDialog'
+import { Toaster } from '../ui/Toaster'
 import { HubScreen } from '@/screens/HubScreen'
 import { EditorScreen } from '@/screens/EditorScreen'
 import { StudioScreen } from '@/screens/StudioScreen'
-import { ArchiveScreen } from '@/screens/ArchiveScreen'
+import { ArchiveScreen } from '@/screens/archive/ArchiveScreen'
 import { SettingsScreen } from '@/screens/SettingsScreen'
 
 const screens = {
@@ -28,6 +29,7 @@ export function AppShell() {
         <Screen />
       </div>
       <AboutDialog />
+      <Toaster />
     </div>
   )
 }
