@@ -1,0 +1,27 @@
+# Installer-Konfiguration für Windows (NSIS) und macOS (DMG/ZIP).
+appId: works.pj.docforge
+productName: DocForge
+copyright: © P.J. Works
+directories:
+  output: release/${version}
+  buildResources: build
+files:
+  - out/**
+  - package.json
+asarUnpack:
+  - resources/**
+win:
+  target: [nsis]
+  artifactName: ${productName}-Setup-${version}.${ext}
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  perMachine: false
+mac:
+  target: [dmg, zip]
+  category: public.app-category.productivity
+  artifactName: ${productName}-${version}-${arch}.${ext}
+  extendInfo:
+    NSCameraUsageDescription: DocForge benötigt die Kamera für Bewerbungsfotos im Kamera-Studio. Bilder werden nur lokal verarbeitet.
+linux:
+  target: [AppImage]

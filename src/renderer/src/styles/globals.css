@@ -1,0 +1,265 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Globale Styles & wiederverwendbare Komponenten-Klassen.
+ * Farben/Schriften stammen aus theme/tokens.ts (als CSS-Variablen gesetzt).
+ */
+
+@layer base {
+  :root {
+    /* Fallbacks, bis applyTheme() läuft (Stahl-Rampe aus dem Design) */
+    --accent-100: 238 246 255;
+    --accent-200: 214 235 255;
+    --accent-300: 181 217 253;
+    --accent-400: 148 188 227;
+    --accent-500: 116 157 196;
+    --accent-600: 89 126 163;
+    --accent-700: 65 97 128;
+    --accent-800: 44 69 93;
+    --accent-900: 29 45 61;
+    --font-heading: 'Barlow Condensed', system-ui, sans-serif;
+    --font-body: 'Barlow', system-ui, sans-serif;
+    --glow: 1;
+    color-scheme: dark;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-ground font-body text-accent-100 antialiased;
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.55;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading font-semibold;
+    line-height: 1.12;
+  }
+
+  input,
+  textarea,
+  [contenteditable='true'] {
+    user-select: text;
+  }
+
+  :focus {
+    outline: none;
+  }
+  :focus-visible {
+    outline: 2px solid rgb(var(--accent-400));
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: rgb(var(--accent-500) / 0.35);
+  }
+
+  /* Schlanke Scrollbars im System-Stil */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--accent-500) / 0.25);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--accent-400) / 0.45);
+  }
+}
+
+@layer components {
+  /* Hintergrund-Raster (32px) aus den Screens + optionale Scanlines */
+  .app-grid {
+    background-color: theme('colors.ground');
+    background-image:
+      linear-gradient(rgb(var(--accent-500) / 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--accent-500) / 0.06) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  html[data-scanlines='on'] .app-grid::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgb(255 255 255 / 0.018) 0px,
+      rgb(255 255 255 / 0.018) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  }
+
+  /* "Blueprint"-Panel: Hairline-Rahmen mit "+"-Registriermarken an den Ecken */
+  .blueprint {
+    position: relative;
+    border: 1px solid theme('colors.line');
+  }
+  .blueprint > .corner {
+    position: absolute;
+    width: 11px;
+    height: 11px;
+    color: rgb(var(--accent-100) / 0.55);
+    pointer-events: none;
+  }
+  .blueprint > .corner::before,
+  .blueprint > .corner::after {
+    content: '';
+    position: absolute;
+    background: currentColor;
+  }
+  .blueprint > .corner::before {
+    left: 5px;
+    top: 0;
+    width: 1px;
+    height: 100%;
+  }
+  .blueprint > .corner::after {
+    top: 5px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+  }
+  .blueprint > .corner.tl {
+    top: -6px;
+    left: -6px;
+  }
+  .blueprint > .corner.tr {
+    top: -6px;
+    right: -6px;
+  }
+  .blueprint > .corner.bl {
+    bottom: -6px;
+    left: -6px;
+  }
+  .blueprint > .corner.br {
+    bottom: -6px;
+    right: -6px;
+  }
+
+  /* Systemmeldungs-Label: "[ SYSTEM ] …" */
+  .sys-label {
+    @apply font-heading font-semibold uppercase tracking-system;
+    font-size: 12px;
+    line-height: 1;
+  }
+
+  /* Leuchtender Text (Überschriften, Kennzahlen) */
+  .text-glow {
+    text-shadow: 0 0 calc(18px * var(--glow)) rgb(var(--accent-400) / calc(0.35 * var(--glow)));
+  }
+  .text-glow-soft {
+    text-shadow: 0 0 calc(8px * var(--glow)) rgb(var(--accent-400) / calc(0.45 * var(--glow)));
+  }
+
+  /* Buttons wie im Industry-Design: eckig, Hairline, Überschriftenschrift */
+  .btn {
+    @apply inline-flex cursor-pointer items-center justify-center gap-1.5 border border-line font-heading font-semibold text-accent-200;
+    font-size: 14px;
+    line-height: 1.2;
+    padding: 6.8px 12.2px;
+    background: transparent;
+    transition:
+      background-color 120ms,
+      border-color 120ms,
+      box-shadow 120ms;
+  }
+  .btn:hover {
+    background: rgb(var(--accent-100) / 0.07);
+  }
+  .btn:active {
+    background: rgb(var(--accent-100) / 0.14);
+  }
+  .btn:disabled {
+    @apply cursor-not-allowed opacity-40;
+  }
+  .btn-primary {
+    @apply border-accent-600 bg-accent-600 text-ground shadow-glow-sm;
+  }
+  .btn-primary:hover {
+    @apply bg-accent-500;
+  }
+  .btn-primary:active {
+    @apply bg-accent-700;
+  }
+  .btn-ghost {
+    @apply border-transparent text-accent-400;
+  }
+
+  .input {
+    @apply w-full border border-line bg-transparent px-2.5 py-1.5 font-body text-accent-100;
+    min-height: 36px;
+    font-size: 14px;
+    caret-color: rgb(var(--accent-400));
+  }
+  .input:hover {
+    border-color: rgb(var(--accent-400) / 0.45);
+  }
+  .input:focus-visible {
+    @apply border-accent-400;
+    outline-offset: 0;
+  }
+
+  .tag {
+    @apply inline-flex items-center;
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    padding: 3px 10px;
+  }
+}
+
+/* "Reduzierte Effekte": alle Animationen und Übergänge aus */
+html[data-fx='reduced'] *,
+html[data-fx='reduced'] *::before,
+html[data-fx='reduced'] *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Dezente Einblend-Animation für Screens/Panels */
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.animate-panel-in {
+  animation: panel-in 220ms ease-out both;
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+.animate-caret {
+  animation: caret-blink 1s steps(1) infinite;
+}
