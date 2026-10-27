@@ -32,8 +32,8 @@ Electron · React · TypeScript · Vite · Tailwind CSS · SQLite · Anthropic S
 
 ---
 
-> Stand **Version 1.1.0**: Phasen 1–4 (Layout, lokale Datenbank & Archiv, Dokument-Editor mit Vorlagen,
-> PDF/DOCX-Export, Kamera-Studio) plus Auto-Update. Die KI-Befehlsleiste folgt als Update.
+> Stand **Version 1.2.0**: Phasen 1–5 (Layout, lokale Datenbank & Archiv, Dokument-Editor mit Vorlagen,
+> PDF/DOCX-Export, Kamera-Studio, KI-Befehlsleiste mit Claude) plus Auto-Update.
 
 ## 🚀 Installation (Windows)
 
@@ -49,6 +49,28 @@ Bewerbungsfotos: im **Kamera-Studio** aufnehmen (Countdown, Raster, Hintergrund 
 Zuschnitt 3:4 / Passbild / quadratisch) und mit „Im Lebenslauf verwenden“ übernehmen – oder im Editor
 unter *Design → Foto aus Datei …* einfügen. Die Hintergrund-Erkennung (MediaPipe) läuft komplett lokal.
 
+
+## 🤖 KI-Befehlsleiste (optional)
+
+Im Editor kannst du Befehle eingeben wie *„Mach das Anschreiben formeller“* oder eine Stellenanzeige
+einfügen und *„An die Stellenanzeige anpassen“* wählen. Claude schlägt einzelne Änderungen vor, die als
+Rot/Grün-Vergleich angezeigt werden – jede einzeln übernehmbar. Übernommene Änderungen werden als neue
+Version gespeichert (Reiter *Verlauf*, jede Version wiederherstellbar). Claude erfindet keine Fakten:
+fehlende Anforderungen aus der Stellenanzeige werden nur als „Nicht in deinem Profil“ angezeigt.
+
+**Einrichtung:** *Einstellungen → KI-Befehlsleiste* → eigenen API-Key von
+[console.anthropic.com](https://console.anthropic.com) eintragen. Modellwahl: Claude Opus 5.5 (Standard),
+Sonnet 5.5 oder Haiku 5.5.
+
+> ⚠ **Kosten:** Jede Anfrage wird über das Anthropic-Konto abgerechnet, **zu dem der eingetragene Key gehört**
+> (nicht über ein claude.ai-Abo). Trage nur deinen eigenen Key ein und setze in der Console ein Ausgabenlimit.
+> Auf geteilten PCs gilt der Key für alle, die dasselbe Windows-Benutzerkonto nutzen.
+
+- Der Key wird mit der Verschlüsselung des Betriebssystems gespeichert (Windows DPAPI / macOS Keychain),
+  nie im Klartext und nie im Code. Ist keine Verschlüsselung verfügbar, wird er nicht gespeichert.
+- Netzwerkzugriff nur beim Ausführen eines Befehls. Gesendet werden Dokumenttext und ggf. Stellenanzeige –
+  keine Fotos, keine Gestaltung, keine anderen Dokumente.
+- Ohne Key funktioniert der Rest der App vollständig.
 
 ## 🛠 Entwicklung
 

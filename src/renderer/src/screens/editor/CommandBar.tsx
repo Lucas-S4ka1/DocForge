@@ -62,7 +62,7 @@ export function CommandBar() {
     : error
       ? t(`ai.errors.${error}`, { defaultValue: t('ai.errors.AI_FAILED') })
       : proposal
-        ? t('ai.proposed', { n: proposal.changes.length })
+        ? t('ai.proposed', { count: proposal.changes.length })
         : null
 
   return (

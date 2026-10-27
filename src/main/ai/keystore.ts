@@ -10,6 +10,12 @@ import type { AiStatus } from '@shared/ai'
 
 const file = () => join(app.getPath('userData'), 'claude-key.bin')
 
+// Nur für automatisierte Tests im Entwicklungsmodus (Container ohne Schlüsselbund).
+// In der installierten App (app.isPackaged) hat diese Variable keine Wirkung.
+if (!app.isPackaged && process.env['DOCFORGE_TEST_INSECURE_KEYSTORE'] === '1') {
+  app.whenReady().then(() => safeStorage.setUsePlainTextEncryption?.(true))
+}
+
 export class KeyStoreError extends Error {
   constructor(public readonly code: 'AI_NO_ENCRYPTION' | 'AI_BAD_REQUEST') {
     super(code)

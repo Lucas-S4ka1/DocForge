@@ -38,6 +38,11 @@ export function AiSettings() {
 
   return (
     <>
+      {/* Deutlicher Kostenhinweis: abgerechnet wird über das Konto des Keys */}
+      <div className="flex flex-col gap-1 border border-warning/60 bg-warning/5 px-3 py-2.5">
+        <span className="font-heading text-[12px] font-semibold uppercase tracking-label text-warning">⚠ {t('settings.costTitle')}</span>
+        <p className="m-0 text-[12.5px] leading-snug text-accent-100">{t('settings.costNotice')}</p>
+      </div>
       {status && !status.encryptionAvailable && <p className="m-0 text-[12px] text-warning">{t('ai.errors.AI_NO_ENCRYPTION')}</p>}
       {status?.hasKey ? (
         <div className="flex flex-col gap-2">
@@ -65,7 +70,7 @@ export function AiSettings() {
               }, t('settings.keySaved'))
             }}
           >
-            <input className="input font-mono text-[13px]" type="password" autoComplete="off" spellCheck={false} placeholder="sk-ant-…" value={key} onChange={(e) => setKey(e.target.value)} />
+            <input disabled={status?.encryptionAvailable === false} className="input font-mono text-[13px]" type="password" autoComplete="off" spellCheck={false} placeholder="sk-ant-…" value={key} onChange={(e) => setKey(e.target.value)} />
             <button type="submit" className="btn btn-primary flex-none" disabled={busy || key.trim().length < 20}>
               {t('common.save')}
             </button>

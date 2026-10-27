@@ -127,7 +127,7 @@ export function ReviewView({ proposal }: { proposal: Proposal }) {
                 </div>
               )
             })}
-            {proposal.invalidCount > 0 && <p className="m-0 text-[9pt] text-[#9a9da5]">{t('ai.invalid', { n: proposal.invalidCount })}</p>}
+            {proposal.invalidCount > 0 && <p className="m-0 text-[9pt] text-[#9a9da5]">{t('ai.invalid', { count: proposal.invalidCount })}</p>}
           </div>
         )}
       </div>
@@ -143,13 +143,13 @@ export function ReviewPanel({ proposal }: { proposal: Proposal }) {
 
   const doApply = async (only: boolean) => {
     const n = await apply(only)
-    toast.success(n ? t('ai.applied', { n }) : t('ai.discarded'))
+    toast.success(n ? t('ai.applied', { count: n }) : t('ai.discarded'))
   }
 
   return (
     <div className="flex flex-col gap-[18px]">
       <AsideLabel>
-        [ REVIEW ] {t('ai.changes', { n: proposal.changes.length })}
+        [ REVIEW ] {t('ai.changes', { count: proposal.changes.length })}
       </AsideLabel>
       <div className="grid grid-cols-2 gap-2">
         <button type="button" className="btn btn-primary blueprint" disabled={!proposal.changes.length} onClick={() => void doApply(false)}>
