@@ -14,6 +14,7 @@ import { db, mutate, useQuery } from '@/store/db'
 import { useApp } from '@/store/app'
 import { useArchive } from '@/store/archive'
 import { formatDate, formatDateTime } from '@/lib/format'
+import { openInEditor } from '@/lib/newDocument'
 import { MiniButton, RecordPanel, SectionLabel, useAction, useDebounced } from './common'
 
 export function DocumentTypeFilter({ value, onChange }: { value: DocumentType | null; onChange(v: DocumentType | null): void }) {
@@ -94,7 +95,7 @@ function DocumentDetail({ id, onDeleted }: { id: number | null; onDeleted(): voi
           {doc.companyName ? ` · ${doc.companyName}` : ''}
         </span>
       </div>
-      <button type="button" className="btn self-start" disabled title={t('common.comingInPhase', { phase: 3 })}>
+      <button type="button" className="btn btn-primary self-start" onClick={() => void openInEditor(doc.id)}>
         {t('archive.openInEditor')}
       </button>
 

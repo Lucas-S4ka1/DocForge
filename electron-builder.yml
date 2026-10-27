@@ -8,20 +8,35 @@ directories:
 files:
   - out/**
   - package.json
-asarUnpack:
-  - resources/**
 win:
   target: [nsis]
+  icon: build/icon.ico
   artifactName: ${productName}-Setup-${version}.${ext}
 nsis:
+  # Installation pro Benutzer → keine Admin-Rechte nötig (z. B. auf Schulungs-PCs)
   oneClick: false
-  allowToChangeInstallationDirectory: true
   perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  shortcutName: DocForge
+  installerLanguages: [de_DE, en_US]
+  language: '1031'
+  # Nutzerdaten bleiben bei Deinstallation erhalten
+  deleteAppDataOnUninstall: false
 mac:
   target: [dmg, zip]
+  icon: build/icon.png
   category: public.app-category.productivity
   artifactName: ${productName}-${version}-${arch}.${ext}
   extendInfo:
     NSCameraUsageDescription: DocForge benötigt die Kamera für Bewerbungsfotos im Kamera-Studio. Bilder werden nur lokal verarbeitet.
 linux:
   target: [AppImage]
+compression: maximum
+# Releases & Auto-Update über GitHub Releases (öffentliches Repo)
+publish:
+  provider: github
+  owner: Lucas-S4ka1
+  repo: DocForge
+  releaseType: release

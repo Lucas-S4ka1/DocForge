@@ -136,6 +136,32 @@ export function documentsRepo(db: Db) {
       return get(id)
     },
 
+    /**
+     * Automatisches Speichern aus dem Editor. Damit der Verlauf übersichtlich bleibt,
+     * wird eine kürzlich (≤ 15 min) automatisch angelegte Version überschrieben,
+     * statt bei jedem Tastendruck eine neue Version anzulegen.
+     */
+    autosave(id: number, content: unknown): DocumentRecord {
+      const cur = get(id)
+      const s = serialize(content)
+      const ts = now()
+      const latest = db
+        .prepare('SELECT id, note, created_at FROM document_versions WHERE document_id = ? ORDER BY version DESC LIMIT 1')
+        .get(id) as { id: number; note: string | null; created_at: string } | undefined
+      const recent = latest && latest.note === 'autosave' && Date.now() - Date.parse(latest.created_at) < 15 * 60 * 1000
+      db.transaction(() => {
+        if (recent) {
+          db.prepare('UPDATE document_versions SET content = ? WHERE id = ?').run(s, latest.id)
+          db.prepare('UPDATE documents SET content = ?, updated_at = ? WHERE id = ?').run(s, ts, id)
+        } else {
+          const version = cur.currentVersion + 1
+          insertVersion.run(id, version, s, 'autosave', ts)
+          db.prepare('UPDATE documents SET content=?, current_version=?, updated_at=? WHERE id=?').run(s, version, ts, id)
+        }
+      })()
+      return get(id)
+    },
+
     versions(id: number): DocumentVersion[] {
       return (
         db

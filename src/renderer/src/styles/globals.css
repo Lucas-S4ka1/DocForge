@@ -263,3 +263,12 @@ html[data-fx='reduced'] *::after {
 .animate-caret {
   animation: caret-blink 1s steps(1) infinite;
 }
+
+/* PDF-Druckfenster: nur weißes Papier, kein App-Hintergrund */
+html.print-mode,
+html.print-mode body,
+html.print-mode #root {
+  height: auto;
+  background: #fff;
+  overflow: visible;
+}

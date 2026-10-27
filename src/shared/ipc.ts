@@ -53,6 +53,17 @@ export const IpcChannels = {
   archiveChooseBackupFolder: 'archive:choose-backup-folder',
   archiveOpenBackupFolder: 'archive:open-backup-folder',
   archiveSeedDemo: 'archive:seed-demo',
+  photoImport: 'photo:import',
+  exportPdf: 'export:pdf',
+  exportDocx: 'export:docx',
+  /** Print-Fenster meldet: Dokument ist gerendert, PDF kann erzeugt werden. */
+  printReady: 'print:ready',
+  printGetDoc: 'print:get-doc',
+  updateCheck: 'update:check',
+  updateDownload: 'update:download',
+  updateInstall: 'update:install',
+  /** Main → Renderer: Update-Status */
+  updateStatus: 'update:status',
   /** Main → Renderer: Datenbank wurde extern verändert (z. B. Wiederherstellung). */
   dbChanged: 'db:changed'
 } as const
@@ -91,6 +102,7 @@ export interface DbContract {
     create(input: DocumentInput): DocumentRecord
     updateMeta(id: number, patch: DocumentMetaPatch): DocumentRecord
     saveContent(id: number, content: unknown, note?: string | null): DocumentRecord
+    autosave(id: number, content: unknown): DocumentRecord
     versions(id: number): DocumentVersion[]
     restoreVersion(id: number, version: number): DocumentRecord
     duplicate(id: number): DocumentRecord
@@ -127,7 +139,7 @@ export const dbMethodNames: { [NS in keyof DbContract]: (keyof DbContract[NS])[]
   profiles: ['list', 'get', 'create', 'update', 'remove'],
   companies: ['list', 'get', 'create', 'update', 'remove'],
   applications: ['list', 'get', 'getRow', 'create', 'update', 'remove', 'attachPhoto'],
-  documents: ['list', 'get', 'create', 'updateMeta', 'saveContent', 'versions', 'restoreVersion', 'duplicate', 'remove'],
+  documents: ['list', 'get', 'create', 'updateMeta', 'saveContent', 'autosave', 'versions', 'restoreVersion', 'duplicate', 'remove'],
   notes: ['list', 'create', 'update', 'remove'],
   events: ['list', 'upcoming', 'create', 'update', 'remove'],
   photos: ['list', 'remove'],
@@ -151,7 +163,7 @@ export interface AppInfo {
   isDev: boolean
 }
 
-export type MenuAction = 'about' | 'navigate:hub' | 'navigate:editor' | 'navigate:studio' | 'navigate:archive' | 'navigate:settings'
+export type MenuAction = 'about' | 'new:cv' | 'new:letter' | 'navigate:hub' | 'navigate:editor' | 'navigate:studio' | 'navigate:archive' | 'navigate:settings'
 
 /** Die API, die der Renderer unter `window.docforge` sieht. */
 export interface DocForgeApi {
@@ -177,11 +189,42 @@ export interface DocForgeApi {
     /** Legt fiktive Beispieldaten an (zum Ausprobieren). */
     seedDemo(): Promise<void>
   }
+  photos: {
+    /** Öffnen-Dialog → Bild in den Fotoordner übernehmen. `null` = abgebrochen. */
+    importFromFile(profileId: number | null): Promise<Photo | null>
+  }
+  exporter: {
+    /** Speichern-Dialog → PDF aus der A4-Vorschau. Gibt den Pfad zurück (`null` = abgebrochen). */
+    pdf(documentId: number): Promise<string | null>
+    docx(documentId: number): Promise<string | null>
+  }
+  print: {
+    /** Nur im Print-Fenster: Dokument laden und Fertig melden. */
+    getDoc(): Promise<{ doc: DocumentRecord; lang: 'de' | 'en' } | null>
+    ready(): void
+  }
+  updates: {
+    check(): Promise<void>
+    download(): Promise<void>
+    install(): Promise<void>
+    onStatus(cb: (s: UpdateStatus) => void): () => void
+  }
   /** Abonniert Menüaktionen; gibt eine Abmelde-Funktion zurück. */
   onMenuAction(cb: (action: MenuAction) => void): () => void
   /** Benachrichtigung, wenn die Datenbank ausgetauscht wurde (z. B. nach Wiederherstellung). */
   onDbChanged(cb: () => void): () => void
 }
+
+export type UpdateStatus =
+  | { state: 'idle' }
+  | { state: 'checking' }
+  | { state: 'none'; version: string }
+  | { state: 'available'; version: string; notes: string; date: string | null }
+  | { state: 'downloading'; percent: number; version: string }
+  | { state: 'downloaded'; version: string }
+  | { state: 'offline' }
+  | { state: 'dev' }
+  | { state: 'error'; message: string }
 
 /** Liest den Fehlercode aus einer IPC-Fehlermeldung ("… [IN_USE] …"). */
 export function ipcErrorCode(e: unknown): string {

@@ -4,7 +4,7 @@
  * Es wird nie `ipcRenderer` selbst durchgereicht.
  */
 import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron'
-import { IpcChannels, dbMethodNames, type DbApi, type DocForgeApi, type MenuAction } from '@shared/ipc'
+import { IpcChannels, dbMethodNames, type DbApi, type DocForgeApi, type MenuAction, type UpdateStatus } from '@shared/ipc'
 
 /** Baut aus der Allowlist typisierte Proxys: db.applications.list(…) → invoke('db:call', 'applications', 'list', […]) */
 function buildDbApi(): DbApi {
@@ -36,6 +36,27 @@ const api: DocForgeApi = {
     chooseBackupFolder: () => ipcRenderer.invoke(IpcChannels.archiveChooseBackupFolder),
     openBackupFolder: () => ipcRenderer.invoke(IpcChannels.archiveOpenBackupFolder),
     seedDemo: () => ipcRenderer.invoke(IpcChannels.archiveSeedDemo)
+  },
+  photos: {
+    importFromFile: (profileId) => ipcRenderer.invoke(IpcChannels.photoImport, profileId)
+  },
+  exporter: {
+    pdf: (id) => ipcRenderer.invoke(IpcChannels.exportPdf, id),
+    docx: (id) => ipcRenderer.invoke(IpcChannels.exportDocx, id)
+  },
+  print: {
+    getDoc: () => ipcRenderer.invoke(IpcChannels.printGetDoc),
+    ready: () => ipcRenderer.send(IpcChannels.printReady)
+  },
+  updates: {
+    check: () => ipcRenderer.invoke(IpcChannels.updateCheck),
+    download: () => ipcRenderer.invoke(IpcChannels.updateDownload),
+    install: () => ipcRenderer.invoke(IpcChannels.updateInstall),
+    onStatus: (cb) => {
+      const listener = (_e: IpcRendererEvent, s: UpdateStatus) => cb(s)
+      ipcRenderer.on(IpcChannels.updateStatus, listener)
+      return () => ipcRenderer.removeListener(IpcChannels.updateStatus, listener)
+    }
   },
   onDbChanged: (cb) => {
     const listener = () => cb()

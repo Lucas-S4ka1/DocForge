@@ -3,7 +3,20 @@
 Dokument- und Bewerbungs-Builder: Dokumente visuell **und** per Text-Prompt bearbeiten.
 Alles bleibt lokal auf dem Gerät – keine Cloud, kein Account, keine Telemetrie.
 
-> Stand: **Phase 2** – lokale SQLite-Datenbank, Migrationen, IPC-Schicht, Archiv mit Suche/Filter/Tags, Backup & Wiederherstellung.
+> Stand **Version 1.0.0**: Phasen 1–3 (Layout, lokale Datenbank & Archiv, Dokument-Editor mit Vorlagen,
+> PDF/DOCX-Export) plus Auto-Update. Kamera-Studio und KI-Befehlsleiste folgen als Updates.
+
+## Für Nutzer: Installation unter Windows
+
+1. `DocForge-Setup-<version>.exe` herunterladen (GitHub → Releases).
+2. Doppelklick. Windows zeigt bei unsignierten Apps „Der Computer wurde durch Windows geschützt“:
+   **„Weitere Informationen“ → „Trotzdem ausführen“**.
+3. Die Installation läuft **pro Benutzer** – es sind **keine Administratorrechte** nötig.
+4. Updates: DocForge prüft beim Start (abschaltbar) bzw. über *Einstellungen → Nach Updates suchen*.
+   Vor jedem Update wird automatisch ein Backup angelegt; die Daten bleiben erhalten.
+
+Erste Schritte: Archiv → Profil anlegen (oder „Beispieldaten laden“) → Hub → „Neuer Lebenslauf“.
+Ein Bewerbungsfoto lässt sich im Editor unter *Design → Foto aus Datei …* einfügen.
 > Die vollständige Anleitung (Daten, Backup, Updates, Releases) folgt mit den nächsten Phasen.
 
 ## Voraussetzungen
@@ -29,7 +42,32 @@ npm run dist:win   # Windows-Installer (NSIS)  → ./release/<version>/
 npm run dist:mac   # macOS (DMG + ZIP)         → ./release/<version>/
 ```
 
-Hinweis: Den macOS-Build am besten auf einem Mac erstellen, den Windows-Build auf Windows.
+Hinweis: Den macOS-Build auf einem Mac erstellen. Den Windows-Build kann man auf Windows oder
+unter Linux (mit installiertem Wine) erstellen.
+
+## Neue Version veröffentlichen (GitHub Release + Auto-Update)
+
+Die App sucht Updates im öffentlichen Repo **Lucas-S4ka1/DocForge** (`electron-builder.yml` → `publish`).
+
+1. Versionsnummer in `package.json` erhöhen, z. B. `1.0.0` → `1.1.0`
+   (die Versionsanzeige „Version X.X.X · produced by P.J. Works“ aktualisiert sich automatisch).
+2. Änderungen committen und pushen.
+3. **Variante A – automatisch:** GitHub-Token mit Recht „Contents: Read and write“ anlegen
+   (GitHub → Settings → Developer settings → Fine-grained tokens) und bauen + hochladen:
+   ```bash
+   # Windows (PowerShell):  $env:GH_TOKEN="ghp_…" ;  npm run release:win
+   # macOS/Linux:           GH_TOKEN=ghp_… npm run release:win
+   ```
+   electron-builder legt einen **Entwurf** des Releases an. Auf GitHub Release-Notes (= Changelog
+   im Update-Dialog) eintragen und auf **„Publish release“** klicken.
+4. **Variante B – von Hand:** `npm run dist:win`, dann auf GitHub *Releases → Draft a new release*,
+   Tag `v1.1.0`, und **alle drei Dateien** aus `release/1.1.0/` hochladen:
+   `DocForge-Setup-1.1.0.exe`, `DocForge-Setup-1.1.0.exe.blockmap`, `latest.yml`.
+   Ohne `latest.yml` findet die App das Update nicht.
+
+Installierte Apps zeigen danach „[ SYSTEM ] Neue Version 1.1.0 verfügbar“ mit Changelog,
+Download-Fortschritt und „Jetzt neu starten und installieren“. Vor der Installation wird
+automatisch ein Backup erstellt; Datenbank-Migrationen laufen beim nächsten Start.
 
 ## Wo liegen die Daten?
 
@@ -47,7 +85,7 @@ Inhalt:
 | Datei/Ordner     | Inhalt                                                        |
 | ---------------- | ------------------------------------------------------------- |
 | `archive.db`     | SQLite-Datenbank (Profile, Dokumente, Versionen, Bewerbungen …) |
-| `photos/`        | Fotos als Bilddateien                                         |
+| `photos/`        | Fotos als Bilddateien (Original-Qualität)                     |
 | `backups/`       | Backups (Standard-Ordner, in den Einstellungen änderbar)      |
 | `settings.json`  | App-Einstellungen                                             |
 

@@ -10,6 +10,7 @@ import { loadSettings } from './settings-store'
 import { hardenSession, hardenWebContents } from './security'
 import { initDatabase, shutdownDatabase, startAutoBackup } from './db/service'
 import { registerPhotoProtocol, registerPhotoScheme } from './photo-protocol'
+import { initUpdater } from './updater'
 
 const isDev = !app.isPackaged
 const devServerUrl = process.env['ELECTRON_RENDERER_URL']
@@ -78,6 +79,7 @@ if (!app.requestSingleInstanceLock()) {
     }
     registerPhotoProtocol()
     registerIpc()
+    initUpdater()
     startAutoBackup()
     buildMenu(loadSettings().language)
     createMainWindow()

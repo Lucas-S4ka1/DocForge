@@ -9,6 +9,7 @@ import { mutate, useQuery } from '@/store/db'
 import { toast } from '@/store/toast'
 import { formatBytes, formatDateTime } from '@/lib/format'
 import { useAction } from './archive/common'
+import { useUpdate } from '@/store/update'
 import { useApp } from '@/store/app'
 import { languages } from '@/i18n'
 import { Panel } from '@/components/ui/Panel'
@@ -22,6 +23,7 @@ export function SettingsScreen() {
   const update = useApp((s) => s.updateSettings)
   const dataPath = useApp((s) => s.info?.dataPath ?? '')
   const run = useAction()
+  const checkUpdates = useUpdate((s) => s.check)
   const info = useQuery(() => window.docforge.archive.info(), []).data
   const [confirmRestore, setConfirmRestore] = useState(false)
   const lang = settings.language
@@ -182,6 +184,9 @@ export function SettingsScreen() {
               checked={settings.checkUpdatesOnStart}
               onChange={(v) => update({ checkUpdatesOnStart: v })}
             />
+            <button type="button" className="btn self-start" onClick={checkUpdates}>
+              {t('settings.checkUpdates')}
+            </button>
           </Panel>
         </div>
 

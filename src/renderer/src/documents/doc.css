@@ -1,0 +1,151 @@
+/*
+ * Dokument-Styles (weißes Papier, professionell) – gelten für A4-Vorschau UND PDF.
+ * Alle Maße in mm/pt, damit Vorschau und Druck übereinstimmen.
+ * Variablen: --acc (Akzentfarbe), --fh / --fb (Schriften), --mt/--mr/--mb/--ml (Ränder).
+ */
+
+.df-doc {
+  --ink: #232427;
+  --muted: #6b6e75;
+  --rule: #d9dbe0;
+  --acc-soft: color-mix(in srgb, var(--acc) 9%, white);
+  color: var(--ink);
+  font-family: var(--fb);
+  font-size: 9.6pt;
+  line-height: 1.45;
+  background: #fff;
+  text-align: left;
+  user-select: text;
+  -webkit-font-smoothing: antialiased;
+}
+.df-doc * { box-sizing: border-box; }
+.df-doc p { margin: 0; }
+.df-doc h1, .df-doc h2, .df-doc h3 { font-family: var(--fh); margin: 0; letter-spacing: 0; line-height: 1.1; }
+
+/* Blatt in der Vorschau: A4 mit Rändern; im Druck übernimmt @page die Ränder */
+.df-sheet {
+  width: 210mm;
+  min-height: 297mm;
+  padding: var(--mt) var(--mr) var(--mb) var(--ml);
+  position: relative;
+}
+.df-print .df-sheet { width: auto; min-height: 0; padding: 0; }
+
+.df-muted { color: var(--muted); }
+.df-acc { color: var(--acc); }
+.df-pre { white-space: pre-line; }
+.df-avoid { break-inside: avoid; }
+
+/* Foto (3:4) */
+.df-photo { width: 32mm; aspect-ratio: 3 / 4; object-fit: cover; flex: none; display: block; }
+.df-photo-ph {
+  width: 32mm; aspect-ratio: 3 / 4; flex: none; border: 1px dashed #b9bcc4; color: #9a9da5;
+  display: grid; place-items: center; font-size: 7.5pt; text-align: center;
+}
+
+/* ── Gemeinsame Abschnitte (Lebenslauf) ───────────────────────────── */
+.df-sec { margin-top: 5.5mm; }
+.df-sec-title {
+  font-family: var(--fh); font-weight: 600; font-size: 9.5pt; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--acc); padding-bottom: 1.2mm; border-bottom: 0.6pt solid var(--rule); margin-bottom: 2.6mm;
+  break-after: avoid;
+}
+.df-entry { display: grid; grid-template-columns: 27mm 1fr; column-gap: 5mm; margin-bottom: 3mm; break-inside: avoid; }
+.df-entry-date { color: var(--muted); font-size: 8.6pt; padding-top: 0.3mm; }
+.df-entry-title { font-weight: 700; }
+.df-entry-org { color: var(--muted); font-size: 8.8pt; }
+.df-entry-desc { margin-top: 0.8mm; white-space: pre-line; }
+.df-items { display: flex; flex-wrap: wrap; gap: 1mm 0; }
+.df-items > span:not(:last-child)::after { content: '·'; color: var(--muted); margin: 0 2.2mm; }
+.df-item-level { color: var(--muted); }
+.df-signature { margin-top: 12mm; break-inside: avoid; }
+.df-signature-line { width: 60mm; border-top: 0.6pt solid var(--ink); margin-top: 12mm; padding-top: 1mm; font-size: 8.4pt; color: var(--muted); }
+
+/* ── CV: Klassisch ─────────────────────────────────────────────────── */
+.cv-classic .head { display: flex; gap: 8mm; align-items: flex-start; }
+.cv-classic .head.photo-left { flex-direction: row-reverse; justify-content: flex-end; }
+.cv-classic .name { font-size: 25pt; font-weight: 600; }
+.cv-classic .headline { color: var(--acc); font-size: 10pt; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 2mm; }
+.cv-classic .contact { color: var(--muted); font-size: 8.4pt; margin-top: 3mm; }
+
+/* ── CV: Zweispaltig ───────────────────────────────────────────────── */
+.cv-twocolumn { display: grid; grid-template-columns: 58mm 1fr; column-gap: 8mm; }
+.cv-twocolumn .side { background: var(--acc-soft); padding: 6mm 5mm; align-self: start; }
+.cv-twocolumn .side .df-photo, .cv-twocolumn .side .df-photo-ph { width: 100%; margin-bottom: 5mm; }
+.cv-twocolumn .side .df-sec-title { border-bottom-color: color-mix(in srgb, var(--acc) 25%, white); }
+.cv-twocolumn .side .df-items { flex-direction: column; gap: 1.2mm; }
+.cv-twocolumn .side .df-items > span::after { content: none !important; }
+.cv-twocolumn .side .df-entry { grid-template-columns: 1fr; }
+.cv-twocolumn .name { font-size: 24pt; font-weight: 600; }
+.cv-twocolumn .headline { color: var(--acc); font-size: 10pt; letter-spacing: 0.1em; text-transform: uppercase; margin: 2mm 0 2mm; }
+.cv-twocolumn .contact-list { display: flex; flex-direction: column; gap: 1mm; font-size: 8.4pt; word-break: break-word; }
+
+/* ── CV: Modern ────────────────────────────────────────────────────── */
+.cv-modern .band { background: var(--acc); color: #fff; padding: 7mm 8mm; display: flex; gap: 7mm; align-items: center; }
+.cv-modern .band.photo-left { flex-direction: row-reverse; justify-content: flex-end; }
+.cv-modern .band .name { font-size: 25pt; font-weight: 600; }
+.cv-modern .band .headline { opacity: 0.85; font-size: 10pt; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 1.5mm; }
+.cv-modern .band .contact { opacity: 0.8; font-size: 8.4pt; margin-top: 3mm; }
+.cv-modern .band .df-photo { border: 1mm solid rgba(255,255,255,0.85); width: 30mm; }
+.cv-modern .band .df-photo-ph { border-color: rgba(255,255,255,0.6); color: rgba(255,255,255,0.8); width: 30mm; }
+.cv-modern .df-sec-title { border: 0; border-left: 1.2mm solid var(--acc); padding: 0.4mm 0 0.4mm 2.5mm; color: var(--ink); }
+.cv-modern .df-entry { grid-template-columns: 27mm 1fr; position: relative; }
+.cv-modern .df-entry-title { color: var(--acc); }
+
+/* ── CV: Minimal ───────────────────────────────────────────────────── */
+.cv-minimal .head { text-align: center; padding-bottom: 5mm; border-bottom: 0.6pt solid var(--ink); }
+.cv-minimal .head .df-photo, .cv-minimal .head .df-photo-ph { margin: 0 auto 4mm; width: 28mm; }
+.cv-minimal .name { font-size: 22pt; font-weight: 400; letter-spacing: 0.18em; text-transform: uppercase; }
+.cv-minimal .headline { font-size: 9pt; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-top: 2mm; }
+.cv-minimal .contact { font-size: 8.4pt; color: var(--muted); margin-top: 2.5mm; }
+.cv-minimal .df-sec { display: grid; grid-template-columns: 36mm 1fr; column-gap: 6mm; }
+.cv-minimal .df-sec-title { border: 0; color: var(--ink); font-size: 8.6pt; padding-top: 0.4mm; }
+.cv-minimal .df-entry { grid-template-columns: 1fr; }
+.cv-minimal .df-entry-date { order: 3; }
+
+/* ── Anschreiben (DIN 5008) ────────────────────────────────────────── */
+/* Erste Seite: Briefkopf bis 45 mm (Form B) bzw. 27 mm (Form A), dann Anschriftfeld 45 mm hoch */
+.letter { font-size: 11pt; line-height: 1.42; }
+.letter .lhead { display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-start; text-align: right; }
+.letter.din-b .lhead { height: 35mm; }
+.letter.din-a .lhead { height: 17mm; }
+.letter .lhead .sname { font-family: var(--fh); font-size: 15pt; font-weight: 600; color: var(--acc); }
+.letter .lhead .sline { font-size: 8.6pt; color: var(--muted); }
+.letter .addr-row { display: flex; height: 45mm; margin-left: -5mm; }
+.letter .addr { width: 85mm; padding-left: 5mm; }
+.letter .return { font-size: 7pt; color: var(--muted); height: 5mm; padding-top: 1mm; border-bottom: 0.4pt solid var(--rule); margin-bottom: 2mm; white-space: nowrap; overflow: hidden; }
+.letter .info { margin-left: 15mm; padding-top: 5mm; font-size: 8.6pt; color: var(--muted); display: flex; flex-direction: column; gap: 0.6mm; }
+.letter .date { text-align: right; margin-top: 8.5mm; }
+.letter .ref { font-size: 9pt; color: var(--muted); margin-top: 2mm; }
+.letter .subject { font-weight: 700; margin-top: 8.5mm; margin-bottom: 8.5mm; }
+.letter .body p { margin-bottom: 4.2mm; }
+.letter .closing { margin-top: 1mm; }
+.letter .signame { margin-top: 15mm; }
+.letter .attach { margin-top: 8.5mm; font-size: 10pt; }
+.letter .attach strong { display: block; }
+
+.letter.modern-letter .lhead { height: auto; align-items: flex-start; text-align: left; border-bottom: 1.2mm solid var(--acc); padding-bottom: 4mm; margin-bottom: 8mm; }
+.letter.modern-letter .lhead .sname { font-size: 20pt; }
+.letter.modern-letter .addr-row { height: auto; margin-left: 0; margin-bottom: 4mm; }
+.letter.modern-letter .addr { padding-left: 0; }
+.letter.modern-letter .return { display: none; }
+.letter.modern-letter .subject { color: var(--acc); }
+
+/* ── Deckblatt ─────────────────────────────────────────────────────── */
+.cover { display: flex; flex-direction: column; align-items: center; text-align: center; min-height: calc(297mm - var(--mt) - var(--mb)); }
+.cover .ctitle { font-family: var(--fh); font-size: 40pt; font-weight: 600; color: var(--acc); margin-top: 22mm; letter-spacing: 0.04em; }
+.cover .csub { font-size: 14pt; margin-top: 3mm; }
+.cover .ccompany { font-size: 12pt; color: var(--muted); margin-top: 2mm; }
+.cover .df-photo, .cover .df-photo-ph { width: 55mm; margin: 16mm 0 10mm; }
+.cover .cname { font-family: var(--fh); font-size: 18pt; font-weight: 600; }
+.cover .ccontact { color: var(--muted); margin-top: 2mm; white-space: pre-line; }
+.cover .cattach { margin-top: auto; padding-top: 10mm; white-space: pre-line; }
+.cover .cattach strong { color: var(--acc); display: block; letter-spacing: 0.12em; text-transform: uppercase; font-size: 9pt; margin-bottom: 1.5mm; }
+.cover.cover-modern { align-items: flex-start; text-align: left; border-left: 2.5mm solid var(--acc); padding-left: 10mm; }
+.cover.cover-modern .ctitle { font-size: 48pt; margin-top: 40mm; }
+
+/* ── Freies Dokument ───────────────────────────────────────────────── */
+.free { font-size: 10.5pt; }
+.free .ftitle { font-size: 20pt; font-weight: 600; color: var(--acc); margin-bottom: 6mm; }
+.free p { margin-bottom: 3mm; }
+.free ul { margin: 0 0 3mm 5mm; padding: 0; }

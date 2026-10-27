@@ -110,6 +110,15 @@ export function photosRepo(db: Db, photosDir: string) {
       const tags = tagsFor(db, 'photo', rows.map((r) => r.id as number))
       return rows.map((r) => ({ ...camel<Photo>(r), tags: tags.get(r.id as number) ?? [] }))
     },
+    /** Legt einen Fotodatensatz für eine bereits im Fotoordner liegende Datei an. */
+    create(input: { profileId: number | null; fileName: string; width: number; height: number; format: 'png' | 'jpeg'; label?: string | null }): Photo {
+      if (!/^[A-Za-z0-9._-]{1,200}$/.test(input.fileName)) throw new DbError('VALIDATION', 'Invalid file name')
+      const info = db
+        .prepare('INSERT INTO photos (profile_id, file_name, width, height, format, label, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
+        .run(input.profileId, input.fileName, input.width, input.height, input.format, input.label ?? null, now())
+      const row = db.prepare('SELECT * FROM photos WHERE id = ?').get(Number(info.lastInsertRowid)) as Record<string, unknown>
+      return { ...camel<Photo>(row), tags: [] }
+    },
     /** Löscht Datensatz und Bilddatei. */
     remove(id: number): void {
       const row = mustExist(db.prepare('SELECT file_name FROM photos WHERE id = ?').get(assertId(id)) as { file_name: string } | undefined)

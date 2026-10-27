@@ -12,27 +12,26 @@
     "build": "npm run typecheck && electron-vite build",
     "preview": "electron-vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
-    "dist": "npm run build && electron-builder",
-    "dist:win": "npm run build && electron-builder --win",
-    "dist:mac": "npm run build && electron-builder --mac",
+    "dist": "npm run build && electron-builder --publish never && electron-builder install-app-deps",
+    "dist:win": "npm run build && electron-builder --win --publish never && electron-builder install-app-deps",
+    "dist:mac": "npm run build && electron-builder --mac --publish never && electron-builder install-app-deps",
     "postinstall": "electron-builder install-app-deps",
-    "test": "cross-env ELECTRON_RUN_AS_NODE=1 electron node_modules/vitest/vitest.mjs run"
+    "test": "cross-env ELECTRON_RUN_AS_NODE=1 electron node_modules/vitest/vitest.mjs run",
+    "release:win": "npm run build && electron-builder --win --publish always && electron-builder install-app-deps"
   },
   "dependencies": {
+    "better-sqlite3": "~12.11.1",
+    "docx": "~9.5.1",
+    "electron-updater": "~6.6.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
     "@fontsource/barlow": "^5.2.6",
     "@fontsource/barlow-condensed": "^5.2.6",
     "@fontsource/exo-2": "^5.2.6",
     "@fontsource/inter": "^5.2.6",
     "@fontsource/rajdhani": "^5.2.6",
-    "better-sqlite3": "~12.11.1",
-    "i18next": "^25.5.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "react-i18next": "^15.7.0",
-    "zod": "^4.6.7",
-    "zustand": "^5.0.8"
-  },
-  "devDependencies": {
+    "@fontsource/source-serif-4": "^5.3.1",
     "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^22.18.0",
     "@types/react": "^19.1.0",
@@ -43,10 +42,20 @@
     "electron": "~42.11.18",
     "electron-builder": "^26.0.12",
     "electron-vite": "^5.0.0",
+    "i18next": "^25.5.0",
     "postcss": "^8.5.6",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-i18next": "^15.7.0",
     "tailwindcss": "^3.4.17",
     "typescript": "~5.9.2",
     "vite": "^7.1.0",
-    "vitest": "^3.2.7"
-  }
+    "vitest": "^3.2.7",
+    "zustand": "^5.0.8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Lucas-S4ka1/DocForge.git"
+  },
+  "homepage": "https://github.com/Lucas-S4ka1/DocForge"
 }

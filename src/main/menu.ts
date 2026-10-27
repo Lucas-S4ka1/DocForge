@@ -17,7 +17,9 @@ const labels = {
     studio: 'Kamera-Studio',
     archive: 'Archiv',
     settings: 'Einstellungen …',
-    quit: 'Beenden'
+    quit: 'Beenden',
+    newCv: 'Neuer Lebenslauf',
+    newLetter: 'Neues Anschreiben'
   },
   en: {
     file: 'File',
@@ -30,7 +32,9 @@ const labels = {
     studio: 'Camera studio',
     archive: 'Archive',
     settings: 'Settings …',
-    quit: 'Quit'
+    quit: 'Quit',
+    newCv: 'New CV',
+    newLetter: 'New cover letter'
   }
 } as const
 
@@ -73,6 +77,9 @@ export function buildMenu(lang: Language): void {
     {
       label: l.file,
       submenu: [
+        { label: l.newCv, accelerator: 'CmdOrCtrl+N', click: () => send('new:cv') },
+        { label: l.newLetter, accelerator: 'CmdOrCtrl+L', click: () => send('new:letter') },
+        { type: 'separator' },
         ...(isMac ? [] : [{ label: l.settings, accelerator: 'Ctrl+,', click: () => send('navigate:settings') }]),
         ...(isMac ? [] : [{ type: 'separator' } as MenuItemConstructorOptions, { role: 'quit', label: l.quit } as MenuItemConstructorOptions])
       ]

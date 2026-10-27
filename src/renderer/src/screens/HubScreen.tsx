@@ -12,6 +12,11 @@ import { ProfileSwitcher } from '@/components/layout/ProfileSwitcher'
 import { db, useQuery } from '@/store/db'
 import { formatDateTime } from '@/lib/format'
 import type { DocumentRow } from '@shared/models'
+import { requestCreate } from '@/lib/requestCreate'
+import { openInEditor } from '@/lib/newDocument'
+import { useState } from 'react'
+import { Modal } from '@/components/ui/Modal'
+import { documentTypes } from '@shared/models'
 
 interface QuickAction {
   key: 'newCv' | 'newLetter' | 'newDoc' | 'camera'
@@ -22,6 +27,7 @@ interface QuickAction {
 export function HubScreen() {
   const { t } = useTranslation()
   const navigate = useApp((s) => s.navigate)
+  const [chooseType, setChooseType] = useState(false)
   const lang = useApp((s) => s.settings.language)
   const activeProfileId = useApp((s) => s.settings.activeProfileId)
   const profile = useQuery(() => (activeProfileId ? db.profiles.get(activeProfileId).catch(() => null) : Promise.resolve(null)), [activeProfileId]).data
@@ -29,9 +35,9 @@ export function HubScreen() {
   const recent = useQuery(() => db.documents.list({ profileId: activeProfileId, limit: 6 }), [activeProfileId]).data ?? []
 
   const actions: QuickAction[] = [
-    { key: 'newCv', icon: 'user', onClick: () => navigate('editor') },
-    { key: 'newLetter', icon: 'mail', onClick: () => navigate('editor') },
-    { key: 'newDoc', icon: 'fileplus', onClick: () => navigate('editor') },
+    { key: 'newCv', icon: 'user', onClick: () => void requestCreate('cv') },
+    { key: 'newLetter', icon: 'mail', onClick: () => void requestCreate('cover_letter') },
+    { key: 'newDoc', icon: 'fileplus', onClick: () => setChooseType(true) },
     { key: 'camera', icon: 'camera', onClick: () => navigate('studio') }
   ]
 
@@ -118,6 +124,25 @@ export function HubScreen() {
           </Panel>
         </div>
       </div>
+      {chooseType && (
+        <Modal tag="NEU" title={t('hub.actions.newDoc')} onClose={() => setChooseType(false)} width={420}>
+          <div className="flex flex-col gap-2">
+            {documentTypes.map((type) => (
+              <button
+                key={type}
+                type="button"
+                className="btn justify-start py-3 text-[15px]"
+                onClick={() => {
+                  setChooseType(false)
+                  void requestCreate(type)
+                }}
+              >
+                + {t(`docType.${type}`)}
+              </button>
+            ))}
+          </div>
+        </Modal>
+      )}
     </main>
   )
 }
@@ -126,7 +151,7 @@ export function HubScreen() {
 function RecentCard({ doc, edited }: { doc: DocumentRow; edited: string }) {
   const { t } = useTranslation()
   return (
-    <div className="flex min-h-0 gap-3.5 border border-line bg-accent-900/35 p-3">
+    <button type="button" onClick={() => void openInEditor(doc.id)} className="flex min-h-0 gap-3.5 border border-line bg-accent-900/35 p-3 text-left transition-colors hover:border-accent-500">
       <div className="flex aspect-[1/1.414] w-[96px] flex-none flex-col gap-1 self-start bg-[#f5f5f8] px-2 py-2.5 shadow-[0_0_0_1px_rgb(var(--accent-400)/0.3)]">
         <span className="h-[5px] w-3/5 bg-[#424244]" />
         <span className="h-[2px] w-2/5 bg-accent-600" />
@@ -140,6 +165,6 @@ function RecentCard({ doc, edited }: { doc: DocumentRow; edited: string }) {
         <span className="text-[12px] text-accent-300">{doc.companyName ?? ''}</span>
         <span className="mt-auto text-[11px] text-accent-500">{edited}</span>
       </div>
-    </div>
+    </button>
   )
 }

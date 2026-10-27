@@ -15,6 +15,8 @@ import { db, mutate, useQuery } from '@/store/db'
 import { useApp } from '@/store/app'
 import { useArchive } from '@/store/archive'
 import { formatDate, formatDateTime } from '@/lib/format'
+import { openInEditor } from '@/lib/newDocument'
+import { requestCreate } from '@/lib/requestCreate'
 import { MiniButton, RecordPanel, SectionLabel, useAction, useDebounced } from './common'
 import { ApplicationForm, EventForm } from './forms'
 
@@ -118,9 +120,16 @@ function ApplicationDetail({ id, onDeleted }: { id: number | null; onDeleted(): 
 
       <div className="flex flex-col gap-2">
         <SectionLabel>{t('archive.attached')}</SectionLabel>
-        <span className="text-[13px] text-accent-200">
-          {row.documents.length ? row.documents.map((d) => `${d.title} (v${d.version})`).join(' · ') : '—'}
-        </span>
+        {row.documents.map((d) => (
+          <button key={d.id} type="button" onClick={() => void openInEditor(d.id)} className="text-left text-[13px] text-accent-200 underline-offset-2 hover:text-accent-100 hover:underline">
+            {d.title} <span className="text-accent-500">(v{d.version})</span>
+          </button>
+        ))}
+        <div className="flex gap-1.5">
+          <MiniButton onClick={() => void requestCreate('cv', row.id)}>+ {t('docShort.cv')}</MiniButton>
+          <MiniButton onClick={() => void requestCreate('cover_letter', row.id)}>+ {t('docType.cover_letter')}</MiniButton>
+          <MiniButton onClick={() => void requestCreate('cover_page', row.id)}>+ {t('docType.cover_page')}</MiniButton>
+        </div>
       </div>
 
       <div className="flex flex-col gap-2">
