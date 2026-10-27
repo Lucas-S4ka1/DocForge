@@ -83,7 +83,11 @@ Die App sucht Updates im öffentlichen Repo **Lucas-S4ka1/DocForge** (`electron-
 1. Versionsnummer in `package.json` erhöhen, z. B. `1.0.0` → `1.1.0`
    (die Versionsanzeige „Version X.X.X · produced by P.J. Works“ aktualisiert sich automatisch).
 2. Änderungen committen und pushen.
-3. **Variante A – automatisch:** GitHub-Token mit Recht „Contents: Read and write“ anlegen
+3. **Variante A – GitHub Actions (empfohlen):** Tag pushen, z. B. `git tag v1.1.0 && git push origin v1.1.0`
+   (oder auf GitHub *Actions → Release → Run workflow*). Der Workflow baut den Installer auf Windows
+   und legt einen **Release-Entwurf** an. Auf GitHub unter *Releases* den Entwurf öffnen,
+   Changelog prüfen, **„Publish release“** klicken – fertig.
+4. **Variante B – lokal mit Token:** GitHub-Token mit Recht „Contents: Read and write“ anlegen
    (GitHub → Settings → Developer settings → Fine-grained tokens) und bauen + hochladen:
    ```bash
    # Windows (PowerShell):  $env:GH_TOKEN="ghp_…" ;  npm run release:win
@@ -91,7 +95,7 @@ Die App sucht Updates im öffentlichen Repo **Lucas-S4ka1/DocForge** (`electron-
    ```
    electron-builder legt einen **Entwurf** des Releases an. Auf GitHub Release-Notes (= Changelog
    im Update-Dialog) eintragen und auf **„Publish release“** klicken.
-4. **Variante B – von Hand:** `npm run dist:win`, dann auf GitHub *Releases → Draft a new release*,
+5. **Variante C – von Hand:** `npm run dist:win`, dann auf GitHub *Releases → Draft a new release*,
    Tag `v1.1.0`, und **alle drei Dateien** aus `release/1.1.0/` hochladen:
    `DocForge-Setup-1.1.0.exe`, `DocForge-Setup-1.1.0.exe.blockmap`, `latest.yml`.
    Ohne `latest.yml` findet die App das Update nicht.

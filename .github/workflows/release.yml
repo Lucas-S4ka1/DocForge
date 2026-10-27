@@ -1,0 +1,29 @@
+# Baut den Windows-Installer auf einem echten Windows-Runner und legt einen
+# Release-ENTWURF an (Installer + .blockmap + latest.yml für Auto-Updates).
+# Auslösen: Tag "v1.2.3" pushen ODER auf GitHub unter Actions → "Release" → "Run workflow".
+# Danach auf GitHub → Releases den Entwurf prüfen und "Publish release" klicken.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Build & Release-Entwurf
+        run: npm run build && npx electron-builder --win --publish always -c.publish.releaseType=draft
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
