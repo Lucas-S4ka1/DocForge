@@ -54,6 +54,8 @@ export const IpcChannels = {
   archiveOpenBackupFolder: 'archive:open-backup-folder',
   archiveSeedDemo: 'archive:seed-demo',
   photoImport: 'photo:import',
+  photoSaveCaptured: 'photo:save-captured',
+  cameraAccess: 'camera:access',
   exportPdf: 'export:pdf',
   exportDocx: 'export:docx',
   /** Print-Fenster meldet: Dokument ist gerendert, PDF kann erzeugt werden. */
@@ -192,6 +194,12 @@ export interface DocForgeApi {
   photos: {
     /** Öffnen-Dialog → Bild in den Fotoordner übernehmen. `null` = abgebrochen. */
     importFromFile(profileId: number | null): Promise<Photo | null>
+    /** Aufnahme aus dem Kamera-Studio in voller Qualität speichern. */
+    saveCaptured(input: { data: Uint8Array; format: 'png' | 'jpeg'; width: number; height: number; profileId: number | null; label: string | null }): Promise<Photo>
+  }
+  camera: {
+    /** macOS: Systemfreigabe für die Kamera anfragen. Windows/Linux: immer true. */
+    requestAccess(): Promise<boolean>
   }
   exporter: {
     /** Speichern-Dialog → PDF aus der A4-Vorschau. Gibt den Pfad zurück (`null` = abgebrochen). */

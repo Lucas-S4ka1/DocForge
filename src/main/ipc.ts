@@ -15,7 +15,7 @@ import { dataPaths } from './db/connection'
 import { renderPdf, printJobFor } from './export/pdf'
 import { buildDocx } from './export/docx'
 import { createContent, contentKindFor, isDocContent } from '@shared/document'
-import { nativeImage } from 'electron'
+import { nativeImage, systemPreferences } from 'electron'
 import { copyFileSync, writeFileSync } from 'node:fs'
 import { randomUUID } from 'node:crypto'
 import { extname, join } from 'node:path'
@@ -145,6 +145,36 @@ export function registerIpc(): void {
     const fileName = `${randomUUID()}.${format === 'png' ? 'png' : 'jpg'}`
     copyFileSync(src, join(dataPaths().photosDir, fileName))
     return getRepos().photos.create({ profileId: typeof profileId === 'number' ? profileId : null, fileName, width, height, format, label: null })
+  })
+
+  // Aufnahme aus dem Kamera-Studio: Bytes prüfen und als Datei im Fotoordner ablegen
+  handle(IpcChannels.photoSaveCaptured, (input: unknown) => {
+    const x = input as { data?: unknown; format?: unknown; width?: unknown; height?: unknown; profileId?: unknown; label?: unknown }
+    const data = x?.data instanceof Uint8Array ? Buffer.from(x.data) : null
+    const format = x?.format === 'png' ? 'png' : x?.format === 'jpeg' ? 'jpeg' : null
+    const w = Number(x?.width), h = Number(x?.height)
+    if (!data || !format || data.length > 80 * 1024 * 1024 || !(w > 0 && w <= 10000) || !(h > 0 && h <= 10000)) {
+      throw new DbError('VALIDATION', 'Invalid photo')
+    }
+    // Signatur prüfen (PNG: 89 50 4E 47, JPEG: FF D8)
+    const ok = format === 'png' ? data.subarray(0, 4).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47])) : data[0] === 0xff && data[1] === 0xd8
+    if (!ok) throw new DbError('VALIDATION', 'Invalid image data')
+    const fileName = `${randomUUID()}.${format === 'png' ? 'png' : 'jpg'}`
+    writeFileSync(join(dataPaths().photosDir, fileName), data)
+    return getRepos().photos.create({
+      profileId: typeof x.profileId === 'number' ? x.profileId : null,
+      fileName,
+      width: Math.round(w),
+      height: Math.round(h),
+      format,
+      label: typeof x.label === 'string' ? x.label.slice(0, 100) : null
+    })
+  })
+
+  ipcMain.handle(IpcChannels.cameraAccess, async () => {
+    if (process.platform !== 'darwin') return true
+    if (systemPreferences.getMediaAccessStatus('camera') === 'granted') return true
+    return systemPreferences.askForMediaAccess('camera')
   })
 
   // ── Export ───────────────────────────────────────────────────────────────

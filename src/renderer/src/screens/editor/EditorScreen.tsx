@@ -1,6 +1,6 @@
 /**
  * Dokument-Editor: Struktur links, A4-Vorschau Mitte (zoombar), Inhalt/Design rechts,
- * Befehlsleiste unten (KI folgt in Phase 5). Export als PDF und DOCX.
+ * Befehlsleiste unten (KI-Anbindung folgt). Export als PDF und DOCX.
  */
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -153,7 +153,7 @@ function EditorWorkspace() {
 
         <div className="flex min-w-0 flex-1 flex-col">
           <Preview />
-          {/* Prompt-Befehlsleiste (Claude-Anbindung folgt in Phase 5) */}
+          {/* Prompt-Befehlsleiste (Claude-Anbindung folgt) */}
           <div className="flex-none px-[22px] pb-[18px] pt-2">
             <div className="blueprint flex h-[52px] items-center gap-3 border-accent-400 bg-accent-900/70 pl-4 pr-2 shadow-glow">
               <Corners />

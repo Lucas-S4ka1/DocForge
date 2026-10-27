@@ -32,8 +32,8 @@ Electron · React · TypeScript · Vite · Tailwind CSS · SQLite · Anthropic S
 
 ---
 
-> Stand **Version 1.0.0**: Phasen 1–3 (Layout, lokale Datenbank & Archiv, Dokument-Editor mit Vorlagen,
-> PDF/DOCX-Export) plus Auto-Update. Kamera-Studio und KI-Befehlsleiste folgen als Updates.
+> Stand **Version 1.1.0**: Phasen 1–4 (Layout, lokale Datenbank & Archiv, Dokument-Editor mit Vorlagen,
+> PDF/DOCX-Export, Kamera-Studio) plus Auto-Update. Die KI-Befehlsleiste folgt als Update.
 
 ## 🚀 Installation (Windows)
 
@@ -45,7 +45,9 @@ Electron · React · TypeScript · Vite · Tailwind CSS · SQLite · Anthropic S
    Vor jedem Update wird automatisch ein Backup angelegt; die Daten bleiben erhalten.
 
 Erste Schritte: Archiv → Profil anlegen (oder „Beispieldaten laden“) → Hub → „Neuer Lebenslauf“.
-Ein Bewerbungsfoto lässt sich im Editor unter *Design → Foto aus Datei …* einfügen.
+Bewerbungsfotos: im **Kamera-Studio** aufnehmen (Countdown, Raster, Hintergrund weichzeichnen/ersetzen,
+Zuschnitt 3:4 / Passbild / quadratisch) und mit „Im Lebenslauf verwenden“ übernehmen – oder im Editor
+unter *Design → Foto aus Datei …* einfügen. Die Hintergrund-Erkennung (MediaPipe) läuft komplett lokal.
 
 
 ## 🛠 Entwicklung

@@ -13,6 +13,11 @@ import { registerPhotoProtocol, registerPhotoScheme } from './photo-protocol'
 import { initUpdater } from './updater'
 
 const isDev = !app.isPackaged
+
+// Software-WebGL als Fallback, wenn die Grafikkarte blockiert/nicht vorhanden ist
+// (z. B. Schulungs-PCs, VMs). Nötig für die lokale Hintergrund-Erkennung im Kamera-Studio.
+// Unbedenklich, da der Renderer ausschließlich eigene, lokale Inhalte lädt.
+app.commandLine.appendSwitch('enable-unsafe-swiftshader')
 const devServerUrl = process.env['ELECTRON_RENDERER_URL']
 
 function isAllowedUrl(url: string): boolean {

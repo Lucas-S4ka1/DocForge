@@ -1,6 +1,6 @@
 /**
  * Einstellungen: Darstellung, Speicher & Backup, KI, Updates, About.
- * Darstellung/Sprache sind in Phase 1 voll funktionsfähig und werden lokal gespeichert.
+ * Alle Einstellungen werden lokal gespeichert und wirken sofort.
  */
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'

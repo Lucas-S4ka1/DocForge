@@ -1,5 +1,5 @@
 /** "Profil: Jana Weber ▾" – wechselt das aktive Profil (Hub-Kopfzeile). */
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useApp } from '@/store/app'
 import { db, useQuery } from '@/store/db'
@@ -13,11 +13,6 @@ export function ProfileSwitcher() {
   const profiles = useQuery(() => db.profiles.list(), []).data ?? []
   const [creating, setCreating] = useState(false)
   const active = profiles.find((p) => p.id === activeId)
-
-  // Kein (gültiges) aktives Profil, aber Profile vorhanden → erstes automatisch wählen
-  useEffect(() => {
-    if (profiles.length > 0 && !active) void update({ activeProfileId: profiles[0].id })
-  }, [profiles, active, update])
 
   return (
     <>

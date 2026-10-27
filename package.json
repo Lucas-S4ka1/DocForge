@@ -1,7 +1,7 @@
 {
   "name": "docforge",
   "productName": "DocForge",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Dokument- und Bewerbungs-Builder – visuell und per Text-Prompt. Offline, lokal, deins.",
   "author": "P.J. Works",
   "license": "UNLICENSED",
@@ -32,6 +32,7 @@
     "@fontsource/inter": "^5.2.6",
     "@fontsource/rajdhani": "^5.2.6",
     "@fontsource/source-serif-4": "^5.3.1",
+    "@mediapipe/tasks-vision": "1.1.0",
     "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^22.18.0",
     "@types/react": "^19.1.0",

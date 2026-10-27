@@ -1,6 +1,6 @@
 /**
  * Tab "Fotos": Galerie der lokal gespeicherten Bewerbungsfotos.
- * Fotos entstehen ab Phase 4 im Kamera-Studio.
+ * Fotos entstehen im Kamera-Studio oder per Datei-Import im Editor.
  */
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'

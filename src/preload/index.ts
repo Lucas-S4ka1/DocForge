@@ -38,7 +38,11 @@ const api: DocForgeApi = {
     seedDemo: () => ipcRenderer.invoke(IpcChannels.archiveSeedDemo)
   },
   photos: {
-    importFromFile: (profileId) => ipcRenderer.invoke(IpcChannels.photoImport, profileId)
+    importFromFile: (profileId) => ipcRenderer.invoke(IpcChannels.photoImport, profileId),
+    saveCaptured: (input) => ipcRenderer.invoke(IpcChannels.photoSaveCaptured, input)
+  },
+  camera: {
+    requestAccess: () => ipcRenderer.invoke(IpcChannels.cameraAccess)
   },
   exporter: {
     pdf: (id) => ipcRenderer.invoke(IpcChannels.exportPdf, id),

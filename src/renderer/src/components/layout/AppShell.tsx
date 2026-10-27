@@ -10,7 +10,7 @@ import { ProfileForm } from '@/screens/archive/forms'
 import { createAndOpen } from '@/lib/newDocument'
 import { HubScreen } from '@/screens/HubScreen'
 import { EditorScreen } from '@/screens/editor/EditorScreen'
-import { StudioScreen } from '@/screens/StudioScreen'
+import { StudioScreen } from '@/screens/studio/StudioScreen'
 import { ArchiveScreen } from '@/screens/archive/ArchiveScreen'
 import { SettingsScreen } from '@/screens/SettingsScreen'
 

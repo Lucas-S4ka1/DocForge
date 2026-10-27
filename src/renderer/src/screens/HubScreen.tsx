@@ -1,6 +1,6 @@
 /**
  * Hub (Dashboard): Schnellaktionen, zuletzt bearbeitete Dokumente, Quests, Statistik.
- * Phase 1: Layout nach Design mit leeren Zuständen. Daten folgen in Phase 2/6.
+ * Quests und erweiterte Statistik werden in Phase 6 ausgebaut.
  */
 import { useTranslation } from 'react-i18next'
 import { useApp } from '@/store/app'

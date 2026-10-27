@@ -7,6 +7,7 @@ import { applyTheme } from '@/theme/tokens'
 import { setLanguage } from '@/i18n'
 import { AppShell } from '@/components/layout/AppShell'
 import { requestCreate } from '@/lib/requestCreate'
+import { db, useQuery } from '@/store/db'
 
 export function App() {
   const ready = useApp((s) => s.ready)
@@ -42,6 +43,15 @@ export function App() {
       }),
     []
   )
+
+  // Immer ein gültiges aktives Profil: fehlt es (oder wurde gelöscht), das erste vorhandene wählen
+  const profiles = useQuery(() => (ready ? db.profiles.list() : Promise.resolve([])), [ready]).data
+  useEffect(() => {
+    if (!ready || !profiles) return
+    const active = settings.activeProfileId
+    if (profiles.length > 0 && !profiles.some((p) => p.id === active)) void useApp.getState().updateSettings({ activeProfileId: profiles[0].id })
+    if (profiles.length === 0 && active) void useApp.getState().updateSettings({ activeProfileId: null })
+  }, [ready, profiles, settings.activeProfileId])
 
   if (!ready) return <div className="app-grid h-full" />
   return <AppShell />

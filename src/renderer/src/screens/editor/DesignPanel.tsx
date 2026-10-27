@@ -130,6 +130,9 @@ export function DesignPanel() {
                 ))}
               </div>
               <div className="flex flex-wrap gap-2">
+                <button type="button" className="btn text-[12.5px]" onClick={() => useApp.getState().navigate('studio')}>
+                  {t('editor.openStudio')}
+                </button>
                 <button type="button" className="btn text-[12.5px]" onClick={importPhoto}>
                   {t('editor.importPhoto')}
                 </button>

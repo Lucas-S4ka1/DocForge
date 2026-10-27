@@ -1,6 +1,6 @@
 /**
  * Tab "Dokumente": Liste aller Dokumente + Detail mit Versionsverlauf (wiederherstellbar).
- * Neue Dokumente werden ab Phase 3 im Editor angelegt.
+ * Neue Dokumente werden im Hub/Editor angelegt.
  */
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
