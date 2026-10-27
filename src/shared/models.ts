@@ -149,6 +149,8 @@ export interface DocumentRecord {
   template: string
   content: unknown
   currentVersion: number
+  /** Zeitpunkt des letzten PDF/DOCX-Exports (Schema v2) */
+  lastExportedAt: string | null
   createdAt: string
   updatedAt: string
 }
@@ -270,4 +272,41 @@ export interface RestoreResult {
   /** Sicherheits-Backup des vorherigen Zustands. */
   safetyBackup: string
   schemaVersion: number
+}
+
+// ── Hub / Dashboard (Quests, Hinweise, Statistik) ─────────────────────────
+
+export const questSteps = ['cv', 'photo', 'letter', 'posting', 'export', 'sent'] as const
+export type QuestStep = (typeof questSteps)[number]
+
+export interface Quest {
+  applicationId: number
+  company: string
+  role: string
+  status: ApplicationStatus
+  steps: { key: QuestStep; done: boolean }[]
+  /** 0–100 */
+  pct: number
+  /** nächster offener Schritt */
+  next: QuestStep | null
+  cvId: number | null
+  letterId: number | null
+}
+
+export type Notice =
+  | { kind: 'followup'; applicationId: number; company: string; days: number }
+  | { kind: 'event'; applicationId: number; company: string; eventKind: EventKind; startsAt: string }
+  | { kind: 'backup'; days: number | null }
+
+export const achievementKeys = ['firstSent', 'fiveSent', 'firstInterview', 'firstOffer', 'firstPhoto', 'firstBackup', 'weeklyGoal'] as const
+export type AchievementKey = (typeof achievementKeys)[number]
+
+export interface HubData {
+  quests: Quest[]
+  notices: Notice[]
+  /** 8 Wochen, älteste zuerst; weekStart = Montag (YYYY-MM-DD) */
+  weekly: { weekStart: string; sent: number }[]
+  thisWeekSent: number
+  stats: ArchiveStats
+  achievements: { key: AchievementKey; done: boolean }[]
 }

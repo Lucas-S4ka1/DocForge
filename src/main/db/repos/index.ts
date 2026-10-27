@@ -5,6 +5,7 @@ import { companiesRepo } from './companies'
 import { applicationsRepo } from './applications'
 import { documentsRepo } from './documents'
 import { eventsRepo, notesRepo, photosRepo, statsRepo, tagsRepo } from './misc'
+import { dashboardRepo } from './dashboard'
 
 export function createRepos(db: Db, photosDir: string) {
   return {
@@ -16,7 +17,8 @@ export function createRepos(db: Db, photosDir: string) {
     events: eventsRepo(db),
     photos: photosRepo(db, photosDir),
     tags: tagsRepo(db),
-    stats: statsRepo(db)
+    stats: statsRepo(db),
+    dashboard: dashboardRepo(db)
   }
 }
 

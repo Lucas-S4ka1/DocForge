@@ -44,12 +44,57 @@ const de = {
     viewArchive: 'Archiv öffnen →',
     recentEmpty: 'Noch keine Dokumente. Lege oben deinen ersten Lebenslauf an.',
     quests: 'Aktive Bewerbungen',
-    questsEmpty: 'Keine aktiven Bewerbungen. Quests erscheinen hier, sobald du eine Bewerbung anlegst.',
+    questsEmpty: 'Keine aktiven Bewerbungen. Lege im Archiv eine Bewerbung an – hier siehst du dann, was noch fehlt (Foto, Anschreiben, Export …).',
     stats: 'Statistik',
     statApplications: 'Bewerbungen',
     statDrafts: 'Entwürfe',
     statSent: 'Gesendet',
-    statInterviews: 'Gespräche'
+    statInterviews: 'Gespräche',
+    progress: 'Fortschritt',
+    weeklyTitle: 'Gesendet pro Woche (KW)',
+    week: 'KW {{n}}',
+    goalLine: 'Ziel {{n}}',
+    weekTooltip_one: 'KW {{week}} (ab {{from}}): 1 Bewerbung gesendet',
+    weekTooltip_other: 'KW {{week}} (ab {{from}}): {{count}} Bewerbungen gesendet',
+    goalProgress: 'Wochenziel: {{done}} / {{goal}} gesendet',
+    goalOff: 'Kein Wochenziel gesetzt',
+    achievements: 'Erfolge',
+    unlocked: 'freigeschaltet',
+    locked: 'noch offen',
+    notice: {
+      event: '{{kind}} bei {{company}} · {{when}}',
+      followup: 'Nachfassen bei {{company}} – vor {{days}} Tagen gesendet, noch keine Antwort',
+      backup: 'Letztes Backup vor {{days}} Tagen – jetzt sichern',
+      backupNever: 'Noch kein Backup – jetzt sichern'
+    }
+  },
+  quest: {
+    done: 'Alles erledigt – viel Erfolg!',
+    next: {
+      cv: 'Lebenslauf unvollständig',
+      photo: 'Foto fehlt',
+      letter: 'Anschreiben noch nicht zugeschnitten',
+      posting: 'Stellenanzeige fehlt',
+      export: 'Noch nicht als PDF exportiert',
+      sent: 'Noch nicht gesendet'
+    },
+    action: {
+      cv: 'Lebenslauf öffnen',
+      photo: 'Zum Kamera-Studio',
+      letter: 'Anschreiben öffnen',
+      posting: 'Anzeige hinterlegen',
+      export: 'Exportieren',
+      sent: 'Als gesendet markieren'
+    }
+  },
+  achievement: {
+    firstSent: 'Erste Bewerbung gesendet',
+    fiveSent: '5 Bewerbungen gesendet',
+    firstInterview: 'Erstes Vorstellungsgespräch',
+    firstOffer: 'Erste Zusage',
+    firstPhoto: 'Bewerbungsfoto aufgenommen',
+    firstBackup: 'Erstes Backup gemacht',
+    weeklyGoal: 'Wochenziel erreicht'
   },
   editor: {
     crumb: 'Editor /',

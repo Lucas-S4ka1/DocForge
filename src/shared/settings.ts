@@ -29,6 +29,8 @@ export interface AppSettings {
   backupFolder: string
   /** Aktives Profil (Person), für Hub und Filter. */
   activeProfileId: number | null
+  /** Wochenziel: gesendete Bewerbungen pro Woche (0 = aus) */
+  weeklyGoal: number
 }
 
 export const defaultSettings: AppSettings = {
@@ -43,7 +45,8 @@ export const defaultSettings: AppSettings = {
   checkUpdatesOnStart: true,
   claudeModel: defaultClaudeModel,
   backupFolder: '',
-  activeProfileId: null
+  activeProfileId: null,
+  weeklyGoal: 3
 }
 
 /** Prüft und bereinigt teilweise/unbekannte Einstellungen (z. B. aus einer alten Datei). */
@@ -66,6 +69,7 @@ export function sanitizeSettings(input: unknown): AppSettings {
     checkUpdatesOnStart: pick('checkUpdatesOnStart', isBool),
     claudeModel: pick('claudeModel', isClaudeModel),
     backupFolder: pick('backupFolder', (v) => typeof v === 'string' && v.length < 1000),
-    activeProfileId: pick('activeProfileId', (v) => v === null || (typeof v === 'number' && Number.isInteger(v) && v > 0))
+    activeProfileId: pick('activeProfileId', (v) => v === null || (typeof v === 'number' && Number.isInteger(v) && v > 0)),
+    weeklyGoal: pick('weeklyGoal', (v) => typeof v === 'number' && Number.isInteger(v) && v >= 0 && v <= 50)
   }
 }

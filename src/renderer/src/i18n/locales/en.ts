@@ -46,12 +46,57 @@ const en: Messages = {
     viewArchive: 'View archive →',
     recentEmpty: 'No documents yet. Create your first CV above.',
     quests: 'Active applications',
-    questsEmpty: 'No active applications. Quests show up here once you create an application.',
+    questsEmpty: 'No active applications. Create one in the archive – this shows what is still missing (photo, cover letter, export …).',
     stats: 'Stats',
     statApplications: 'Applications',
     statDrafts: 'Drafts',
     statSent: 'Sent',
-    statInterviews: 'Interviews'
+    statInterviews: 'Interviews',
+    progress: 'Progress',
+    weeklyTitle: 'Sent per week (CW)',
+    week: 'CW {{n}}',
+    goalLine: 'Goal {{n}}',
+    weekTooltip_one: 'CW {{week}} (from {{from}}): 1 application sent',
+    weekTooltip_other: 'CW {{week}} (from {{from}}): {{count}} applications sent',
+    goalProgress: 'Weekly goal: {{done}} / {{goal}} sent',
+    goalOff: 'No weekly goal set',
+    achievements: 'Achievements',
+    unlocked: 'unlocked',
+    locked: 'not yet',
+    notice: {
+      event: '{{kind}} at {{company}} · {{when}}',
+      followup: 'Follow up with {{company}} – sent {{days}} days ago, no reply yet',
+      backup: 'Last backup {{days}} days ago – back up now',
+      backupNever: 'No backup yet – back up now'
+    }
+  },
+  quest: {
+    done: 'All done – good luck!',
+    next: {
+      cv: 'CV incomplete',
+      photo: 'Photo missing',
+      letter: 'Cover letter not tailored yet',
+      posting: 'Job posting missing',
+      export: 'Not exported as PDF yet',
+      sent: 'Not sent yet'
+    },
+    action: {
+      cv: 'Open CV',
+      photo: 'Go to camera studio',
+      letter: 'Open cover letter',
+      posting: 'Add posting',
+      export: 'Export',
+      sent: 'Mark as sent'
+    }
+  },
+  achievement: {
+    firstSent: 'First application sent',
+    fiveSent: '5 applications sent',
+    firstInterview: 'First interview',
+    firstOffer: 'First offer',
+    firstPhoto: 'Application photo taken',
+    firstBackup: 'First backup made',
+    weeklyGoal: 'Weekly goal reached'
   },
   editor: {
     crumb: 'Editor /',

@@ -13,6 +13,7 @@ import type {
   ApplicationInput,
   ApplicationRow,
   ArchiveStats,
+  HubData,
   BackupResult,
   Company,
   CompanyInput,
@@ -141,6 +142,9 @@ export interface DbContract {
   stats: {
     get(profileId?: number | null): ArchiveStats
   }
+  dashboard: {
+    get(profileId?: number | null, weeklyGoal?: number): HubData
+  }
 }
 
 /** Laufzeit-Allowlist: nur diese Methoden dürfen über `db:call` aufgerufen werden. */
@@ -153,7 +157,8 @@ export const dbMethodNames: { [NS in keyof DbContract]: (keyof DbContract[NS])[]
   events: ['list', 'upcoming', 'create', 'update', 'remove'],
   photos: ['list', 'remove'],
   tags: ['list', 'set'],
-  stats: ['get']
+  stats: ['get'],
+  dashboard: ['get']
 }
 
 /** Macht aus synchronen Methoden Promise-Methoden (so sieht sie der Renderer). */

@@ -68,7 +68,7 @@ export function documentsRepo(db: Db) {
       const rows = db
         .prepare(
           `SELECT d.id, d.profile_id, d.application_id, d.type, d.title, d.language, d.template,
-                  d.current_version, d.created_at, d.updated_at,
+                  d.current_version, d.last_exported_at, d.created_at, d.updated_at,
                   p.name AS profile_name, c.name AS company_name
            FROM documents d
            JOIN profiles p ON p.id = d.profile_id
@@ -198,6 +198,11 @@ export function documentsRepo(db: Db) {
 
     remove(id: number): void {
       db.prepare('DELETE FROM documents WHERE id = ?').run(assertId(id))
+    },
+
+    /** Merkt sich einen erfolgreichen Export (für die Quests). */
+    markExported(id: number): void {
+      db.prepare('UPDATE documents SET last_exported_at = ? WHERE id = ?').run(now(), assertId(id))
     }
   }
 }

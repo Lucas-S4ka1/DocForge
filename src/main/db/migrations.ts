@@ -166,6 +166,15 @@ export const migrations: Migration[] = [
         CREATE TRIGGER trg_photos_untag AFTER DELETE ON photos
           BEGIN DELETE FROM taggings WHERE entity_type = 'photo' AND entity_id = OLD.id; END;
       `)
+  },
+  {
+    version: 2,
+    name: 'export tracking for quests',
+    up: (db) =>
+      db.exec(`
+        -- Wann wurde ein Dokument zuletzt als PDF/DOCX exportiert? (Quest "Als PDF exportiert")
+        ALTER TABLE documents ADD COLUMN last_exported_at TEXT;
+      `)
   }
 ]
 

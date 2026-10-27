@@ -1,6 +1,6 @@
 /**
  * Hub (Dashboard): Schnellaktionen, zuletzt bearbeitete Dokumente, Quests, Statistik.
- * Quests und erweiterte Statistik werden in Phase 6 ausgebaut.
+ * Hinweise (Termine, Nachfassen, Backup) und Quests pro Bewerbung werden lokal berechnet.
  */
 import { useTranslation } from 'react-i18next'
 import { useApp } from '@/store/app'
@@ -17,6 +17,9 @@ import { openInEditor } from '@/lib/newDocument'
 import { useState } from 'react'
 import { Modal } from '@/components/ui/Modal'
 import { documentTypes } from '@shared/models'
+import { QuestPanel } from './hub/QuestPanel'
+import { ProgressPanel, StatsPanel } from './hub/StatsPanel'
+import { Notices } from './hub/Notices'
 
 interface QuickAction {
   key: 'newCv' | 'newLetter' | 'newDoc' | 'camera'
@@ -31,7 +34,8 @@ export function HubScreen() {
   const lang = useApp((s) => s.settings.language)
   const activeProfileId = useApp((s) => s.settings.activeProfileId)
   const profile = useQuery(() => (activeProfileId ? db.profiles.get(activeProfileId).catch(() => null) : Promise.resolve(null)), [activeProfileId]).data
-  const st = useQuery(() => db.stats.get(activeProfileId), [activeProfileId]).data
+  const weeklyGoal = useApp((s) => s.settings.weeklyGoal)
+  const hub = useQuery(() => db.dashboard.get(activeProfileId, weeklyGoal), [activeProfileId, weeklyGoal]).data
   const recent = useQuery(() => db.documents.list({ profileId: activeProfileId, limit: 6 }), [activeProfileId]).data ?? []
 
   const actions: QuickAction[] = [
@@ -39,14 +43,6 @@ export function HubScreen() {
     { key: 'newLetter', icon: 'mail', onClick: () => void requestCreate('cover_letter') },
     { key: 'newDoc', icon: 'fileplus', onClick: () => setChooseType(true) },
     { key: 'camera', icon: 'camera', onClick: () => navigate('studio') }
-  ]
-
-  // "Gesendet" = alles, was kein Entwurf mehr ist; "Gespräche" = Gespräch + Zusage
-  const stats = [
-    { label: t('hub.statApplications'), value: st?.applications ?? 0 },
-    { label: t('hub.statDrafts'), value: st?.byStatus.draft ?? 0 },
-    { label: t('hub.statSent'), value: st ? st.applications - st.byStatus.draft : 0 },
-    { label: t('hub.statInterviews'), value: st ? st.byStatus.interview + st.byStatus.accepted : 0 }
   ]
 
   return (
@@ -86,42 +82,34 @@ export function HubScreen() {
       </div>
 
       <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_400px] gap-5">
-        <Panel
-          tag="LOG"
-          title={t('hub.recent')}
-          aside={
-            <button type="button" onClick={() => navigate('archive')} className="uppercase hover:text-accent-200">
-              {t('hub.viewArchive')}
-            </button>
-          }
-        >
-          {recent.length === 0 ? (
-            <EmptyState hint={t('hub.recentEmpty')} />
-          ) : (
-            <div className="grid min-h-0 flex-1 grid-cols-3 content-start gap-4">
-              {recent.map((d) => (
-                <RecentCard key={d.id} doc={d} edited={formatDateTime(d.updatedAt, lang)} />
-              ))}
-            </div>
-          )}
-        </Panel>
+        <div className="flex min-h-0 flex-col gap-4">
+          {hub && <Notices notices={hub.notices} />}
+          <Panel
+            className="min-h-0 flex-1"
+            tag="LOG"
+            title={t('hub.recent')}
+            aside={
+              <button type="button" onClick={() => navigate('archive')} className="uppercase hover:text-accent-200">
+                {t('hub.viewArchive')}
+              </button>
+            }
+          >
+            {recent.length === 0 ? (
+              <EmptyState hint={t('hub.recentEmpty')} />
+            ) : (
+              <div className="grid min-h-0 flex-1 auto-rows-[minmax(0,1fr)] grid-cols-3 gap-4 overflow-hidden">
+                {recent.map((d) => (
+                  <RecentCard key={d.id} doc={d} edited={formatDateTime(d.updatedAt, lang)} />
+                ))}
+              </div>
+            )}
+          </Panel>
+          {hub && <ProgressPanel data={hub} />}
+        </div>
 
         <div className="flex min-h-0 flex-col gap-5">
-          <Panel tag="QUEST" title={t('hub.quests')} className="flex-1">
-            <EmptyState hint={t('hub.questsEmpty')} />
-          </Panel>
-          <Panel tag="STATUS" title={t('hub.stats')}>
-            <div className="grid grid-cols-2 border-l border-t border-line">
-              {stats.map((s, i) => (
-                <div key={s.label} className="flex flex-col gap-1 border-b border-r border-line p-3">
-                  <span className={`font-heading text-[34px] font-semibold leading-none text-accent-200 ${i === 0 ? 'text-glow' : ''}`}>
-                    {s.value}
-                  </span>
-                  <span className="text-[11px] uppercase tracking-[0.1em] text-accent-400">{s.label}</span>
-                </div>
-              ))}
-            </div>
-          </Panel>
+          {hub ? <QuestPanel quests={hub.quests} /> : <div className="flex-1" />}
+          {hub && <StatsPanel data={hub} />}
         </div>
       </div>
       {chooseType && (
@@ -151,8 +139,8 @@ export function HubScreen() {
 function RecentCard({ doc, edited }: { doc: DocumentRow; edited: string }) {
   const { t } = useTranslation()
   return (
-    <button type="button" onClick={() => void openInEditor(doc.id)} className="flex min-h-0 gap-3.5 border border-line bg-accent-900/35 p-3 text-left transition-colors hover:border-accent-500">
-      <div className="flex aspect-[1/1.414] w-[96px] flex-none flex-col gap-1 self-start bg-[#f5f5f8] px-2 py-2.5 shadow-[0_0_0_1px_rgb(var(--accent-400)/0.3)]">
+    <button type="button" onClick={() => void openInEditor(doc.id)} className="flex min-h-0 gap-3.5 overflow-hidden border border-line bg-accent-900/35 p-3 text-left transition-colors hover:border-accent-500">
+      <div className="flex aspect-[1/1.414] h-full max-h-[136px] flex-none flex-col gap-1 self-start overflow-hidden bg-[#f5f5f8] px-2 py-2.5 shadow-[0_0_0_1px_rgb(var(--accent-400)/0.3)]">
         <span className="h-[5px] w-3/5 bg-[#424244]" />
         <span className="h-[2px] w-2/5 bg-accent-600" />
         {[100, 90, 95, 70, 100, 85, 60].map((w, i) => (

@@ -189,6 +189,7 @@ export function registerIpc(): void {
     const r = win ? await dialog.showSaveDialog(win, opts) : await dialog.showSaveDialog(opts)
     if (r.canceled || !r.filePath) return null
     await renderPdf(doc.id, r.filePath)
+    getRepos().documents.markExported(doc.id)
     return r.filePath
   })
 
@@ -199,6 +200,7 @@ export function registerIpc(): void {
     const r = win ? await dialog.showSaveDialog(win, opts) : await dialog.showSaveDialog(opts)
     if (r.canceled || !r.filePath) return null
     writeFileSync(r.filePath, await buildDocx(doc.content, dataPaths().photosDir))
+    getRepos().documents.markExported(doc.id)
     return r.filePath
   })
 

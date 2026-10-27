@@ -32,8 +32,17 @@ Electron · React · TypeScript · Vite · Tailwind CSS · SQLite · Anthropic S
 
 ---
 
-> Stand **Version 1.2.0**: Phasen 1–5 (Layout, lokale Datenbank & Archiv, Dokument-Editor mit Vorlagen,
-> PDF/DOCX-Export, Kamera-Studio, KI-Befehlsleiste mit Claude) plus Auto-Update.
+> Stand **Version 1.3.0**: Phasen 1–6 (Layout, lokale Datenbank & Archiv, Dokument-Editor mit Vorlagen,
+> PDF/DOCX-Export, Kamera-Studio, KI-Befehlsleiste mit Claude, Hub mit Quests & Statistik) plus Auto-Update.
+
+## 🎯 Hub: Quests & Statistik
+
+- **Quests pro Bewerbung:** Fortschritt in % aus sechs Schritten – Lebenslauf vollständig, Foto,
+  zugeschnittenes Anschreiben, Stellenanzeige hinterlegt, als PDF exportiert, gesendet. Der nächste
+  offene Schritt hat eine Direktaktion (z. B. „Zum Kamera-Studio“).
+- **Hinweise:** anstehende Termine (7 Tage), Nachfassen nach 14 Tagen ohne Antwort, Backup-Erinnerung.
+- **Statistik:** Bewerbungen, Entwürfe, Gesendet, Gespräche; gesendete Bewerbungen pro Kalenderwoche
+  (8 Wochen) mit einstellbarem Wochenziel; sieben Erfolge zum Freischalten.
 
 ## 🚀 Installation (Windows)
 
