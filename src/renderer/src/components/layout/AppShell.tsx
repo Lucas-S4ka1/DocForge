@@ -8,6 +8,7 @@ import { Toaster } from '../ui/Toaster'
 import { UpdateDialog } from './UpdateDialog'
 import { ProfileForm } from '@/screens/archive/forms'
 import { createAndOpen } from '@/lib/newDocument'
+import { ErrorBoundary } from './ErrorBoundary'
 import { HubScreen } from '@/screens/HubScreen'
 import { EditorScreen } from '@/screens/editor/EditorScreen'
 import { StudioScreen } from '@/screens/studio/StudioScreen'
@@ -32,7 +33,9 @@ export function AppShell() {
     <div className="app-grid relative flex h-full w-full overflow-hidden text-accent-100">
       <Sidebar />
       <div key={screen} className="flex min-w-0 flex-1 flex-col">
-        <Screen />
+        <ErrorBoundary resetKey={screen}>
+          <Screen />
+        </ErrorBoundary>
       </div>
       <AboutDialog />
       <Toaster />

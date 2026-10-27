@@ -13,6 +13,8 @@ export function UpdateDialog() {
   const { t } = useTranslation()
   const { status, open, dismiss } = useUpdate()
   const current = useApp((s) => s.info?.version ?? '')
+  // macOS ohne Apple-Signatur kann nicht selbst installieren → Download-Seite öffnen
+  const manualDownload = useApp((s) => s.info?.platform === 'darwin')
   if (!open || status.state === 'idle') return null
 
   const later = (
@@ -55,7 +57,11 @@ export function UpdateDialog() {
           <p className="m-0 text-[12px] text-accent-400">{t('update.safe')}</p>
         </>
       )
-      action = (
+      action = manualDownload ? (
+        <button type="button" className="btn btn-primary" onClick={() => window.open('https://github.com/Lucas-S4ka1/DocForge/releases/latest', '_blank')}>
+          {t('update.openDownloadPage')}
+        </button>
+      ) : (
         <button type="button" className="btn btn-primary" onClick={() => void window.docforge.updates.download()}>
           {t('update.download')}
         </button>

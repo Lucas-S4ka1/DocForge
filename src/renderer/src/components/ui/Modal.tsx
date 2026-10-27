@@ -1,7 +1,7 @@
 /**
  * Modales System-Fenster + Bestätigungsdialog.
  */
-import { useEffect, type ReactNode } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Corners } from './Panel'
 
@@ -20,8 +20,33 @@ export function Modal({
   footer?: ReactNode
   width?: number
 }) {
+  const box = useRef<HTMLDivElement>(null)
+
+  // Fokus in den Dialog holen und beim Schließen zurückgeben (Tastaturbedienung)
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
+    const previous = document.activeElement as HTMLElement | null
+    if (box.current && !box.current.contains(document.activeElement)) box.current.focus()
+    return () => previous?.focus?.()
+  }, [])
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+      // Tab-Fokus im Dialog halten
+      if (e.key === 'Tab' && box.current) {
+        const items = box.current.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled]), textarea, select, [tabindex]:not([tabindex="-1"])')
+        if (!items.length) return
+        const first = items[0]
+        const last = items[items.length - 1]
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault()
+          last.focus()
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault()
+          first.focus()
+        }
+      }
+    }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
@@ -32,8 +57,10 @@ export function Modal({
         role="dialog"
         aria-modal="true"
         aria-label={title}
+        ref={box}
+        tabIndex={-1}
         onMouseDown={(e) => e.stopPropagation()}
-        className="blueprint animate-panel-in flex max-h-full flex-col border-accent-400 bg-ground shadow-glow"
+        className="blueprint animate-panel-in flex max-h-full flex-col border-accent-400 bg-ground shadow-glow outline-none"
         style={{ width }}
       >
         <Corners />

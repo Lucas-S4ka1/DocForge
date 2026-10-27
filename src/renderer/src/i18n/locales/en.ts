@@ -303,6 +303,7 @@ const en: Messages = {
     current: 'installed: {{version}}',
     noNotes: 'No release notes.',
     safe: 'Your data is kept. A backup is created automatically before installing.',
+    openDownloadPage: 'Open download page',
     download: 'Download',
     downloading: 'Downloading version {{version}} …',
     ready: 'Version {{version}} is ready to install',
@@ -582,6 +583,11 @@ const en: Messages = {
     checkOnStartHint: 'Just a short request to GitHub Releases',
     about: '[ ABOUT ]',
     checkUpdates: 'Check for updates'
+  },
+  errorScreen: {
+    title: 'Display error',
+    text: 'This area could not be displayed. Your data is safely stored. Try again or switch to another area.',
+    retry: 'Try again'
   },
   about: {
     title: 'About DocForge'

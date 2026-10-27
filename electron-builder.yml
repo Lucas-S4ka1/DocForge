@@ -27,6 +27,9 @@ nsis:
 mac:
   target: [dmg, zip]
   icon: build/icon.png
+  # Ohne Apple-Entwicklerzertifikat: ad-hoc signieren (nötig, damit die App auf Apple Silicon startet)
+  identity: '-'
+  hardenedRuntime: false
   category: public.app-category.productivity
   artifactName: ${productName}-${version}-${arch}.${ext}
   extendInfo:

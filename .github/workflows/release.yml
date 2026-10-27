@@ -1,5 +1,5 @@
-# Baut den Windows-Installer auf einem echten Windows-Runner und legt einen
-# Release-ENTWURF an (Installer + .blockmap + latest.yml für Auto-Updates).
+# Baut die Installer auf echten Windows- und macOS-Rechnern und legt einen
+# Release-ENTWURF an (Installer + Update-Dateien).
 # Auslösen: Tag "v1.2.3" pushen ODER auf GitHub unter Actions → "Release" → "Run workflow".
 # Danach auf GitHub → Releases den Entwurf prüfen und "Publish release" klicken.
 name: Release
@@ -13,8 +13,16 @@ permissions:
   contents: write
 
 jobs:
-  windows:
-    runs-on: windows-latest
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            args: --win
+          - os: macos-latest
+            args: --mac --x64 --arm64
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -24,6 +32,8 @@ jobs:
       - run: npm ci
       - run: npm test
       - name: Build & Release-Entwurf
-        run: npm run build && npx electron-builder --win --publish always -c.publish.releaseType=draft
+        run: npm run build && npx electron-builder ${{ matrix.args }} --publish always -c.publish.releaseType=draft
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Kein Apple-Zertifikat vorhanden → nicht nach einer Signatur suchen (ad-hoc-Signatur)
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'

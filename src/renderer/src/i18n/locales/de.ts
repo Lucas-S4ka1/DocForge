@@ -301,6 +301,7 @@ const de = {
     current: 'installiert: {{version}}',
     noNotes: 'Keine Änderungsnotizen.',
     safe: 'Deine Daten bleiben erhalten. Vor der Installation wird automatisch ein Backup angelegt.',
+    openDownloadPage: 'Download-Seite öffnen',
     download: 'Herunterladen',
     downloading: 'Lade Version {{version}} herunter …',
     ready: 'Version {{version}} ist bereit zur Installation',
@@ -580,6 +581,11 @@ const de = {
     checkOnStartHint: 'Nur eine kurze Anfrage an GitHub Releases',
     about: '[ ABOUT ]',
     checkUpdates: 'Nach Updates suchen'
+  },
+  errorScreen: {
+    title: 'Darstellungsfehler',
+    text: 'Dieser Bereich konnte nicht angezeigt werden. Deine Daten sind sicher gespeichert. Versuche es erneut oder wechsle in einen anderen Bereich.',
+    retry: 'Erneut versuchen'
   },
   about: {
     title: 'Über DocForge'

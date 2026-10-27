@@ -14,10 +14,17 @@ import { initUpdater } from './updater'
 
 const isDev = !app.isPackaged
 
+// Nur für automatisierte Tests: eigener, temporärer Datenordner (wirkungslos in der installierten App)
+if (isDev && process.env['DOCFORGE_TEST_USER_DATA']) app.setPath('userData', process.env['DOCFORGE_TEST_USER_DATA'])
+
 // Software-WebGL als Fallback, wenn die Grafikkarte blockiert/nicht vorhanden ist
 // (z. B. Schulungs-PCs, VMs). Nötig für die lokale Hintergrund-Erkennung im Kamera-Studio.
 // Unbedenklich, da der Renderer ausschließlich eigene, lokale Inhalte lädt.
 app.commandLine.appendSwitch('enable-unsafe-swiftshader')
+
+// Unerwartete Fehler nicht stillschweigend schlucken, aber auch keine Inhalte loggen
+process.on('uncaughtException', (e) => console.error('[main] Unerwarteter Fehler:', e?.name ?? 'unknown'))
+process.on('unhandledRejection', (e) => console.error('[main] Unbehandelte Promise-Ablehnung:', e instanceof Error ? e.name : 'unknown'))
 const devServerUrl = process.env['ELECTRON_RENDERER_URL']
 
 function isAllowedUrl(url: string): boolean {
