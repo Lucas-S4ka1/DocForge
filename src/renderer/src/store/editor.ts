@@ -14,7 +14,7 @@ interface EditorState {
   content: DocContent | null
   /** 'personal' | Abschnitts-ID | Briefteil */
   selected: string
-  panel: 'content' | 'design'
+  panel: 'content' | 'design' | 'history'
   zoom: number
   saving: boolean
   dirty: boolean
@@ -24,8 +24,12 @@ interface EditorState {
   /** Inhalt ändern (Mutation auf einer Kopie) → Autosave */
   edit(fn: (c: DocContent) => void): void
   rename(title: string): Promise<void>
+  /** Ganzen Inhalt ersetzen und als eigene Version speichern (z. B. KI-Änderungen, Wiederherstellung) */
+  commit(content: DocContent, note: string): Promise<void>
+  /** Inhalt nach Wiederherstellung einer Version neu laden */
+  reload(): Promise<void>
   select(id: string): void
-  setPanel(p: 'content' | 'design'): void
+  setPanel(p: 'content' | 'design' | 'history'): void
   setZoom(z: number): void
   flush(): Promise<void>
 }
@@ -79,6 +83,22 @@ export const useEditor = create<EditorState>((set, get) => ({
     const rec = await db.documents.updateMeta(d.id, { title: title.trim() })
     set({ doc: { ...d, title: rec.title } })
     useDbState.getState().bump()
+  },
+
+  commit: async (content, note) => {
+    const d = get().doc
+    if (!d) return
+    await get().flush()
+    const rec = await db.documents.saveContent(d.id, content, note)
+    set({ content, dirty: false, savedAt: rec.updatedAt, doc: { ...d, currentVersion: rec.currentVersion, updatedAt: rec.updatedAt } })
+    useDbState.getState().bump()
+  },
+
+  reload: async () => {
+    const d = get().doc
+    if (!d) return
+    const rec = await db.documents.get(d.id)
+    if (isDocContent(rec.content)) set({ content: rec.content, dirty: false, savedAt: rec.updatedAt, doc: { ...d, currentVersion: rec.currentVersion, updatedAt: rec.updatedAt } })
   },
 
   select: (selected) => set({ selected, panel: 'content' }),

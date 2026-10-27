@@ -10,6 +10,7 @@ import { toast } from '@/store/toast'
 import { formatBytes, formatDateTime } from '@/lib/format'
 import { useAction } from './archive/common'
 import { useUpdate } from '@/store/update'
+import { AiSettings } from './AiSettings'
 import { useApp } from '@/store/app'
 import { languages } from '@/i18n'
 import { Panel } from '@/components/ui/Panel'
@@ -168,12 +169,7 @@ export function SettingsScreen() {
 
           {/* 03 KI */}
           <Panel tag="03" title={t('settings.ai')} className="gap-4 px-6 py-5">
-            <Field label={t('settings.apiKey')}>
-              <input className="input" type="password" placeholder="sk-ant-…" disabled />
-            </Field>
-            <p className="m-0 text-[12px] text-accent-400">
-              {t('settings.apiKeyHint')} · {t('common.comingInPhase', { phase: 5 })}
-            </p>
+            <AiSettings />
           </Panel>
 
           {/* 04 Updates */}

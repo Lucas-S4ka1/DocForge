@@ -11,6 +11,9 @@ import { DbError } from './db/errors'
 import { backupDir, backupTo, dbInfo, getRepos, restoreFrom, startAutoBackup } from './db/service'
 import { backupFileName } from './db/backup'
 import { seedDemo } from './db/seed'
+import { AiError, cancelRun, runCommand, testKey } from './ai/claude'
+import { KeyStoreError, keyStatus, removeApiKey, saveApiKey } from './ai/keystore'
+import { validateChanges } from '@shared/ai'
 import { dataPaths } from './db/connection'
 import { renderPdf, printJobFor } from './export/pdf'
 import { buildDocx } from './export/docx'
@@ -33,6 +36,7 @@ function loadDoc(id: number) {
 /** Wandelt beliebige Fehler in eine sichere, codierte Meldung um. */
 function toIpcError(e: unknown): Error {
   if (e instanceof DbError) return new Error(`[${e.code}] ${e.message}`)
+  if (e instanceof AiError || e instanceof KeyStoreError) return new Error(`[${e.code}]`)
   // Unerwartete Fehler: nur Typ loggen, keine Inhalte (könnten Nutzerdaten enthalten)
   console.error('[ipc] Unerwarteter Fehler:', e instanceof Error ? e.name : typeof e)
   return new Error('[INTERNAL] Unexpected error')
@@ -205,6 +209,26 @@ export function registerIpc(): void {
     return { doc: loadDoc(job.documentId), lang: loadSettings().language }
   })
   ipcMain.on(IpcChannels.printReady, (e) => printJobFor(e.sender.id)?.ready())
+
+  // ── KI-Befehlsleiste ──────────────────────────────────────────────────────
+  handle(IpcChannels.aiStatus, () => keyStatus())
+  handle(IpcChannels.aiSetKey, (key: unknown) => saveApiKey(key))
+  handle(IpcChannels.aiRemoveKey, () => removeApiKey())
+  handle(IpcChannels.aiTestKey, () => testKey(loadSettings().claudeModel))
+  handle(IpcChannels.aiCancel, () => cancelRun())
+  handle(IpcChannels.aiRun, async (input: unknown) => {
+    const x = (input ?? {}) as { documentId?: unknown; command?: unknown; jobPosting?: unknown }
+    const doc = loadDoc(Number(x.documentId))
+    const result = await runCommand(
+      { documentId: doc.id, command: String(x.command ?? ''), jobPosting: typeof x.jobPosting === 'string' ? x.jobPosting : null },
+      doc.content,
+      doc.language,
+      loadSettings().claudeModel
+    )
+    // Nur Änderungen weitergeben, die sich auf das aktuelle Dokument anwenden lassen
+    const { valid, invalid } = validateChanges(doc.content, result.changes)
+    return { ...result, changes: valid, invalidCount: invalid }
+  })
 
   handle(IpcChannels.archiveSeedDemo, () => {
     const repos = getRepos()

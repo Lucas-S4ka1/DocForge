@@ -15,7 +15,11 @@ let cache: AppSettings | null = null
 export function loadSettings(): AppSettings {
   if (cache) return cache
   try {
-    cache = existsSync(file()) ? sanitizeSettings(JSON.parse(readFileSync(file(), 'utf8'))) : { ...defaultSettings }
+    const raw = existsSync(file()) ? JSON.parse(readFileSync(file(), 'utf8')) : null
+    cache = raw ? sanitizeSettings(raw) : { ...defaultSettings }
+    // Einmalige Migration: Bis 1.1 war das Modell intern auf Sonnet voreingestellt, aber nicht
+    // auswählbar → auf den neuen Standard umstellen. Danach gilt die Auswahl der Nutzerin.
+    if (raw && !raw.modelChosen) cache = { ...cache, claudeModel: defaultSettings.claudeModel }
   } catch {
     // Beschädigte Datei → mit Standardwerten weiterarbeiten (keine Inhalte loggen).
     console.warn('[settings] Einstellungsdatei unlesbar, Standardwerte werden verwendet.')
@@ -27,7 +31,7 @@ export function loadSettings(): AppSettings {
 export function saveSettings(patch: Partial<AppSettings>): AppSettings {
   const next = sanitizeSettings({ ...loadSettings(), ...patch })
   const tmp = `${file()}.tmp`
-  writeFileSync(tmp, JSON.stringify(next, null, 2), 'utf8')
+  writeFileSync(tmp, JSON.stringify({ ...next, modelChosen: true }, null, 2), 'utf8')
   renameSync(tmp, file())
   cache = next
   return next

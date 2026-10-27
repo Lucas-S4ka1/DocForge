@@ -6,6 +6,7 @@
  * das Preload-Skript stellt sie als `window.docforge` bereit.
  */
 import type { AppSettings } from './settings'
+import type { AiResult, AiRunInput, AiStatus } from './ai'
 import type {
   Application,
   ApplicationFilter,
@@ -61,6 +62,12 @@ export const IpcChannels = {
   /** Print-Fenster meldet: Dokument ist gerendert, PDF kann erzeugt werden. */
   printReady: 'print:ready',
   printGetDoc: 'print:get-doc',
+  aiStatus: 'ai:status',
+  aiSetKey: 'ai:set-key',
+  aiRemoveKey: 'ai:remove-key',
+  aiTestKey: 'ai:test-key',
+  aiRun: 'ai:run',
+  aiCancel: 'ai:cancel',
   updateCheck: 'update:check',
   updateDownload: 'update:download',
   updateInstall: 'update:install',
@@ -210,6 +217,15 @@ export interface DocForgeApi {
     /** Nur im Print-Fenster: Dokument laden und Fertig melden. */
     getDoc(): Promise<{ doc: DocumentRecord; lang: 'de' | 'en' } | null>
     ready(): void
+  }
+  ai: {
+    status(): Promise<AiStatus>
+    /** Key wird verschlüsselt gespeichert; zurück kommt nur der Status, nie der Key */
+    setKey(key: string): Promise<AiStatus>
+    removeKey(): Promise<AiStatus>
+    testKey(): Promise<boolean>
+    run(input: AiRunInput): Promise<AiResult & { invalidCount: number }>
+    cancel(): Promise<void>
   }
   updates: {
     check(): Promise<void>

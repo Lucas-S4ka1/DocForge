@@ -3,6 +3,8 @@
  * Geteilt zwischen Main und Renderer, damit beide denselben Typ/Defaultwert kennen.
  */
 
+import { defaultClaudeModel, isClaudeModel } from './ai'
+
 export type Language = 'de' | 'en'
 export type AccentPaletteSetting = 'steel' | 'neon'
 export type FontPairSetting = 'design' | 'rajdhani' | 'exo'
@@ -21,7 +23,7 @@ export interface AppSettings {
   autoBackup: BackupInterval
   /** Automatisch beim Start nach Updates suchen. */
   checkUpdatesOnStart: boolean
-  /** Gewähltes Claude-Modell für die Befehlsleiste (Phase 5). */
+  /** Gewähltes Claude-Modell für die Befehlsleiste. */
   claudeModel: string
   /** Zielordner für Backups ('' = Standard: <Nutzerdaten>/backups). */
   backupFolder: string
@@ -39,7 +41,7 @@ export const defaultSettings: AppSettings = {
   fontPair: 'design',
   autoBackup: 'weekly',
   checkUpdatesOnStart: true,
-  claudeModel: 'claude-sonnet-5-5',
+  claudeModel: defaultClaudeModel,
   backupFolder: '',
   activeProfileId: null
 }
@@ -62,7 +64,7 @@ export function sanitizeSettings(input: unknown): AppSettings {
     fontPair: pick('fontPair', oneOf('design', 'rajdhani', 'exo')),
     autoBackup: pick('autoBackup', oneOf('off', 'daily', 'weekly')),
     checkUpdatesOnStart: pick('checkUpdatesOnStart', isBool),
-    claudeModel: pick('claudeModel', (v) => typeof v === 'string' && v.length > 0 && v.length < 100),
+    claudeModel: pick('claudeModel', isClaudeModel),
     backupFolder: pick('backupFolder', (v) => typeof v === 'string' && v.length < 1000),
     activeProfileId: pick('activeProfileId', (v) => v === null || (typeof v === 'number' && Number.isInteger(v) && v > 0))
   }

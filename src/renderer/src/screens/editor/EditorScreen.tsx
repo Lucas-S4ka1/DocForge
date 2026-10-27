@@ -19,6 +19,10 @@ import { StructurePanel } from './StructurePanel'
 import { Preview } from './Preview'
 import { ContentPanel } from './ContentPanel'
 import { DesignPanel } from './DesignPanel'
+import { CommandBar } from './CommandBar'
+import { HistoryList } from './HistoryPanel'
+import { PostingPanel, ReviewPanel, ReviewView } from './review'
+import { useAi } from '@/store/ai'
 
 export function EditorScreen() {
   const doc = useEditor((s) => s.doc)
@@ -77,6 +81,9 @@ function EditorWorkspace() {
   const run = useAction()
   const [title, setTitle] = useState(doc.title)
   const [exporting, setExporting] = useState<'pdf' | 'docx' | null>(null)
+  const proposalAny = useAi((s) => s.proposal)
+  const posting = useAi((s) => s.postings[doc.id] ?? '')
+  const proposal = proposalAny && proposalAny.documentId === doc.id ? proposalAny : null
   const company = useQuery(() => (doc.applicationId ? db.applications.getRow(doc.applicationId).then((a) => a.companyName) : Promise.resolve(null)), [doc.applicationId]).data
 
   useEffect(() => setTitle(doc.title), [doc.title])
@@ -124,6 +131,11 @@ function EditorWorkspace() {
           {t(`docShort.${doc.type}`)}
           {company ? ` · ${company}` : ''}
         </span>
+        {proposal && (
+          <span className="tag flex-none border border-accent-400 text-accent-100">
+            {t('ai.reviewing', { from: doc.currentVersion, to: doc.currentVersion + 1 })}
+          </span>
+        )}
         <span className="flex-none text-[12px] text-accent-400">
           {saving || dirty ? t('editor.saving') : t('editor.savedAt', { time: savedAt ? formatDateTime(savedAt, lang).split(' · ').pop() : '' })}
         </span>
@@ -149,43 +161,43 @@ function EditorWorkspace() {
       </TopBar>
 
       <div className="flex min-h-0 flex-1">
-        <StructurePanel />
+        {proposal && posting && (proposal.matched_keywords.length + proposal.missing_keywords.length > 0) ? (
+          <PostingPanel proposal={proposal} posting={posting} />
+        ) : (
+          <StructurePanel />
+        )}
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <Preview />
-          {/* Prompt-Befehlsleiste (Claude-Anbindung folgt) */}
-          <div className="flex-none px-[22px] pb-[18px] pt-2">
-            <div className="blueprint flex h-[52px] items-center gap-3 border-accent-400 bg-accent-900/70 pl-4 pr-2 shadow-glow">
-              <Corners />
-              <span className="font-mono text-[16px] font-medium text-accent-300">&gt;</span>
-              <span className="flex-1 font-mono text-[14px] text-accent-500">
-                {t('editor.commandPlaceholder')}
-                <span className="animate-caret ml-0.5 inline-block h-4 w-2 bg-accent-300 align-[-3px]" />
-              </span>
-              <span className="text-[12px] text-accent-500">{t('editor.aiSoon')}</span>
-              <button type="button" className="btn btn-primary" disabled>
-                {t('editor.run')} ⏎
-              </button>
-            </div>
-          </div>
+          {proposal ? <ReviewView proposal={proposal} /> : <Preview />}
+          <CommandBar />
         </div>
 
         <aside className="flex w-[300px] flex-none flex-col border-l border-line">
-          <div className="flex flex-none border-b border-line">
-            {(['content', 'design'] as const).map((p) => (
-              <button
-                key={p}
-                type="button"
-                onClick={() => setPanel(p)}
-                className={`-mb-px flex-1 border-b-2 py-3 font-heading text-[12px] font-semibold uppercase tracking-system ${
-                  panel === p ? 'border-accent-400 text-accent-100' : 'border-transparent text-accent-400 hover:text-accent-200'
-                }`}
-              >
-                [ {t(`editor.panel.${p}`)} ]
-              </button>
-            ))}
-          </div>
-          <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">{panel === 'content' ? <ContentPanel /> : <DesignPanel />}</div>
+          {proposal ? (
+            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-[18px]">
+              <ReviewPanel proposal={proposal} />
+            </div>
+          ) : (
+            <>
+              <div className="flex flex-none border-b border-line">
+                {(['content', 'design', 'history'] as const).map((p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => setPanel(p)}
+                    className={`-mb-px flex-1 border-b-2 py-3 font-heading text-[12px] font-semibold uppercase tracking-system ${
+                      panel === p ? 'border-accent-400 text-accent-100' : 'border-transparent text-accent-400 hover:text-accent-200'
+                    }`}
+                  >
+                    [ {t(`editor.panel.${p}`)} ]
+                  </button>
+                ))}
+              </div>
+              <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
+                {panel === 'content' ? <ContentPanel /> : panel === 'design' ? <DesignPanel /> : <HistoryList />}
+              </div>
+            </>
+          )}
         </aside>
       </div>
     </>

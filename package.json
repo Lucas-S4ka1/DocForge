@@ -20,6 +20,7 @@
     "release:win": "npm run build && electron-builder --win --publish always && electron-builder install-app-deps"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "0.133.0",
     "better-sqlite3": "~12.11.1",
     "docx": "~9.5.1",
     "electron-updater": "~6.6.2",

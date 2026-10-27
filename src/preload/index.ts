@@ -52,6 +52,14 @@ const api: DocForgeApi = {
     getDoc: () => ipcRenderer.invoke(IpcChannels.printGetDoc),
     ready: () => ipcRenderer.send(IpcChannels.printReady)
   },
+  ai: {
+    status: () => ipcRenderer.invoke(IpcChannels.aiStatus),
+    setKey: (key) => ipcRenderer.invoke(IpcChannels.aiSetKey, key),
+    removeKey: () => ipcRenderer.invoke(IpcChannels.aiRemoveKey),
+    testKey: () => ipcRenderer.invoke(IpcChannels.aiTestKey),
+    run: (input) => ipcRenderer.invoke(IpcChannels.aiRun, input),
+    cancel: () => ipcRenderer.invoke(IpcChannels.aiCancel)
+  },
   updates: {
     check: () => ipcRenderer.invoke(IpcChannels.updateCheck),
     download: () => ipcRenderer.invoke(IpcChannels.updateDownload),
