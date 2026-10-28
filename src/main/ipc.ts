@@ -21,7 +21,8 @@ import { createContent, contentKindFor, isDocContent } from '@shared/document'
 import { nativeImage, systemPreferences } from 'electron'
 import { copyFileSync, writeFileSync } from 'node:fs'
 import { randomUUID } from 'node:crypto'
-import { extname, join } from 'node:path'
+import { basename, extname, join } from 'node:path'
+import { extractFile, importExtensions } from './import/extract'
 
 /** Dateiname aus Dokumenttitel (ohne problematische Zeichen). */
 const safeFileName = (title: string) => title.replace(/[\\/:*?"<>|]+/g, '').replace(/\s+/g, '_').slice(0, 80) || 'Dokument'
@@ -133,6 +134,22 @@ export function registerIpc(): void {
 
   handle(IpcChannels.archiveOpenBackupFolder, async () => {
     await shell.openPath(backupDir())
+  })
+
+  // ── Vorhandene Dokumente importieren (Word/PDF/Text) ───────────────────────
+  handle(IpcChannels.documentImport, async () => {
+    const win = BrowserWindow.getFocusedWindow()
+    const opts = {
+      properties: ['openFile'] as 'openFile'[],
+      filters: [
+        { name: 'Word / PDF', extensions: importExtensions },
+        { name: 'Word (veraltet)', extensions: ['doc'] }
+      ]
+    }
+    const r = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts)
+    if (r.canceled || !r.filePaths[0]) return null
+    const { text, photo } = await extractFile(r.filePaths[0])
+    return { fileName: basename(r.filePaths[0]), text, photo }
   })
 
   // ── Fotos aus Datei übernehmen ───────────────────────────────────────────

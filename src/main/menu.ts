@@ -19,7 +19,8 @@ const labels = {
     settings: 'Einstellungen …',
     quit: 'Beenden',
     newCv: 'Neuer Lebenslauf',
-    newLetter: 'Neues Anschreiben'
+    newLetter: 'Neues Anschreiben',
+    importDoc: 'Dokument importieren …'
   },
   en: {
     file: 'File',
@@ -34,7 +35,8 @@ const labels = {
     settings: 'Settings …',
     quit: 'Quit',
     newCv: 'New CV',
-    newLetter: 'New cover letter'
+    newLetter: 'New cover letter',
+    importDoc: 'Import document …'
   }
 } as const
 
@@ -79,6 +81,7 @@ export function buildMenu(lang: Language): void {
       submenu: [
         { label: l.newCv, accelerator: 'CmdOrCtrl+N', click: () => send('new:cv') },
         { label: l.newLetter, accelerator: 'CmdOrCtrl+L', click: () => send('new:letter') },
+        { label: l.importDoc, accelerator: 'CmdOrCtrl+O', click: () => send('import') },
         { type: 'separator' },
         ...(isMac ? [] : [{ label: l.settings, accelerator: 'Ctrl+,', click: () => send('navigate:settings') }]),
         ...(isMac ? [] : [{ type: 'separator' } as MenuItemConstructorOptions, { role: 'quit', label: l.quit } as MenuItemConstructorOptions])

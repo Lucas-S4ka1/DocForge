@@ -20,9 +20,10 @@ import { documentTypes } from '@shared/models'
 import { QuestPanel } from './hub/QuestPanel'
 import { ProgressPanel, StatsPanel } from './hub/StatsPanel'
 import { Notices } from './hub/Notices'
+import { useImport } from '@/store/importer'
 
 interface QuickAction {
-  key: 'newCv' | 'newLetter' | 'newDoc' | 'camera'
+  key: 'newCv' | 'newLetter' | 'newDoc' | 'import' | 'camera'
   icon: IconName
   onClick(): void
 }
@@ -42,6 +43,7 @@ export function HubScreen() {
     { key: 'newCv', icon: 'user', onClick: () => void requestCreate('cv') },
     { key: 'newLetter', icon: 'mail', onClick: () => void requestCreate('cover_letter') },
     { key: 'newDoc', icon: 'fileplus', onClick: () => setChooseType(true) },
+    { key: 'import', icon: 'fileimport', onClick: () => void useImport.getState().begin() },
     { key: 'camera', icon: 'camera', onClick: () => navigate('studio') }
   ]
 
@@ -59,7 +61,7 @@ export function HubScreen() {
       />
 
       {/* Schnellaktionen */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-5 gap-4">
         {actions.map((a, i) => (
           <button
             key={a.key}
@@ -128,6 +130,17 @@ export function HubScreen() {
                 + {t(`docType.${type}`)}
               </button>
             ))}
+            <div className="my-1 border-t border-line" />
+            <button
+              type="button"
+              className="btn justify-start py-3 text-[15px]"
+              onClick={() => {
+                setChooseType(false)
+                void useImport.getState().begin()
+              }}
+            >
+              ↥ {t('import.fromFile')}
+            </button>
           </div>
         </Modal>
       )}

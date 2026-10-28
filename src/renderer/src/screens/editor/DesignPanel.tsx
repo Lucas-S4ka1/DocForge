@@ -3,8 +3,8 @@
  * Ränder, Fotoposition und Fotoauswahl.
  */
 import { useTranslation } from 'react-i18next'
-import { accentPresets, docFonts, templatesByType, type DocFont, type MarginSize, type PhotoPosition } from '@shared/document'
-import { DocumentView } from '@/documents/DocumentView'
+import { accentPresets, docFonts, type DocFont, type MarginSize, type PhotoPosition } from '@shared/document'
+import { TemplatePicker } from '@/documents/TemplatePicker'
 import { useEditor } from '@/store/editor'
 import { useApp } from '@/store/app'
 import { db, mutate, useQuery } from '@/store/db'
@@ -39,23 +39,7 @@ export function DesignPanel() {
   return (
     <div className="flex flex-col gap-[18px]">
       <AsideLabel>{t('editor.template')}</AsideLabel>
-      <div className="grid grid-cols-3 gap-2.5">
-        {templatesByType[doc.type].map((tpl) => {
-          const on = style.template === tpl
-          return (
-            <button key={tpl} type="button" onClick={() => set('template', tpl)} className="flex flex-col items-center gap-1.5">
-              <div
-                className={`relative h-[110px] w-[78px] overflow-hidden bg-white ${on ? 'outline outline-2 outline-offset-2 outline-accent-300 shadow-glow' : 'opacity-80 hover:opacity-100'}`}
-              >
-                <div style={{ zoom: 0.0975 }} className="pointer-events-none">
-                  <DocumentView content={{ ...content, style: { ...style, template: tpl } } as typeof content} mode="thumb" lang={lang} />
-                </div>
-              </div>
-              <span className={`text-[11.5px] ${on ? 'text-accent-100' : 'text-accent-300'}`}>{t(`templates.${tpl}`)}</span>
-            </button>
-          )
-        })}
-      </div>
+      <TemplatePicker type={doc.type} content={content} lang={lang} value={style.template} onChange={(tpl) => set('template', tpl)} />
 
       <AsideLabel>{t('editor.properties')}</AsideLabel>
       <Field label={t('editor.font')}>

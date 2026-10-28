@@ -64,7 +64,8 @@ export function DocumentView({ content, mode, lang = 'de' }: { content: DocConte
 
 function Photo({ style, mode, label }: { style: DocStyle; mode: ViewMode; label: string }) {
   if (style.photoPosition === 'none') return null
-  if (style.photo) return <img className="df-photo" src={`docforge-photo://${encodeURIComponent(style.photo)}`} alt="" />
+  // blob: = Vorschau eines noch nicht gespeicherten Fotos (Import-Dialog)
+  if (style.photo) return <img className="df-photo" src={style.photo.startsWith('blob:') ? style.photo : `docforge-photo://${encodeURIComponent(style.photo)}`} alt="" />
   // Platzhalter nur in der Vorschau, nie im PDF
   return mode === 'print' ? null : <div className="df-photo-ph">{label}</div>
 }

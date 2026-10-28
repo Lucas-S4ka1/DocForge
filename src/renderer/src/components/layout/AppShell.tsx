@@ -8,6 +8,7 @@ import { Toaster } from '../ui/Toaster'
 import { UpdateDialog } from './UpdateDialog'
 import { ProfileForm } from '@/screens/archive/forms'
 import { createAndOpen } from '@/lib/newDocument'
+import { ImportDialog } from '@/components/ImportDialog'
 import { ErrorBoundary } from './ErrorBoundary'
 import { HubScreen } from '@/screens/HubScreen'
 import { EditorScreen } from '@/screens/editor/EditorScreen'
@@ -40,6 +41,7 @@ export function AppShell() {
       <AboutDialog />
       <Toaster />
       <UpdateDialog />
+      <ImportDialog />
       {pending && (
         <ProfileForm
           onClose={() => setPending(null)}

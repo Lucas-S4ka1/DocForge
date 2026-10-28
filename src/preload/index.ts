@@ -37,6 +37,9 @@ const api: DocForgeApi = {
     openBackupFolder: () => ipcRenderer.invoke(IpcChannels.archiveOpenBackupFolder),
     seedDemo: () => ipcRenderer.invoke(IpcChannels.archiveSeedDemo)
   },
+  importer: {
+    pickFile: () => ipcRenderer.invoke(IpcChannels.documentImport)
+  },
   photos: {
     importFromFile: (profileId) => ipcRenderer.invoke(IpcChannels.photoImport, profileId),
     saveCaptured: (input) => ipcRenderer.invoke(IpcChannels.photoSaveCaptured, input)

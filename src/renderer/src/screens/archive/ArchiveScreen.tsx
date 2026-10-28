@@ -2,6 +2,7 @@
  * Archiv (lokale Datenbank): Tabs für Bewerbungen, Dokumente, Fotos, Firmen, Profile.
  * Suche, Filter (Status, Typ, Profil, Tags), Export als .dfdb und Backup.
  */
+import { useImport } from '@/store/importer'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { applicationStatuses, type DocumentType, type TagEntity } from '@shared/models'
@@ -150,6 +151,11 @@ export function ArchiveScreen() {
         )}
 
         <div className="ml-auto flex gap-2">
+          {tab === 'documents' && (
+            <button type="button" className="btn" onClick={() => void useImport.getState().begin()}>
+              ↥ {t('import.button')}
+            </button>
+          )}
           {creatable.includes(tab) && (
             <button type="button" className="btn" onClick={() => archive.setCreating(tab)}>
               + {t(`archive.create.${tab}`)}
@@ -168,9 +174,12 @@ export function ArchiveScreen() {
         <div className="flex items-center gap-4 border border-dashed border-accent-500 px-4 py-3 text-[13px] text-accent-200">
           <span className="sys-label text-accent-400">[ SYSTEM ]</span>
           <span>{t('archive.emptyBanner')}</span>
+          <button type="button" className="btn ml-auto" onClick={() => void useImport.getState().begin()}>
+            ↥ {t('import.ownCv')}
+          </button>
           <button
             type="button"
-            className="btn ml-auto"
+            className="btn"
             onClick={() => run(() => mutate(() => window.docforge.archive.seedDemo()), t('archive.demoCreated'))}
           >
             {t('archive.loadDemo')}

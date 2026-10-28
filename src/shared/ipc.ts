@@ -56,6 +56,8 @@ export const IpcChannels = {
   archiveOpenBackupFolder: 'archive:open-backup-folder',
   archiveSeedDemo: 'archive:seed-demo',
   photoImport: 'photo:import',
+  /** Öffnen-Dialog → Text (und ggf. Foto) aus Word/PDF/Text lesen */
+  documentImport: 'document:import',
   photoSaveCaptured: 'photo:save-captured',
   cameraAccess: 'camera:access',
   exportPdf: 'export:pdf',
@@ -177,7 +179,14 @@ export interface AppInfo {
   isDev: boolean
 }
 
-export type MenuAction = 'about' | 'new:cv' | 'new:letter' | 'navigate:hub' | 'navigate:editor' | 'navigate:studio' | 'navigate:archive' | 'navigate:settings'
+/** Ergebnis des Imports (Text wird im Renderer ausgewertet). */
+export interface ImportedFile {
+  fileName: string
+  text: string
+  photo: { data: Uint8Array; format: 'png' | 'jpeg'; width: number; height: number } | null
+}
+
+export type MenuAction = 'about' | 'new:cv' | 'new:letter' | 'import' | 'navigate:hub' | 'navigate:editor' | 'navigate:studio' | 'navigate:archive' | 'navigate:settings'
 
 /** Die API, die der Renderer unter `window.docforge` sieht. */
 export interface DocForgeApi {
@@ -202,6 +211,10 @@ export interface DocForgeApi {
     openBackupFolder(): Promise<void>
     /** Legt fiktive Beispieldaten an (zum Ausprobieren). */
     seedDemo(): Promise<void>
+  }
+  importer: {
+    /** Öffnen-Dialog → Text und ggf. Porträtfoto einer vorhandenen Datei. `null` = abgebrochen. */
+    pickFile(): Promise<ImportedFile | null>
   }
   photos: {
     /** Öffnen-Dialog → Bild in den Fotoordner übernehmen. `null` = abgebrochen. */

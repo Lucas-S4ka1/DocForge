@@ -7,6 +7,7 @@ import { applyTheme } from '@/theme/tokens'
 import { setLanguage } from '@/i18n'
 import { AppShell } from '@/components/layout/AppShell'
 import { requestCreate } from '@/lib/requestCreate'
+import { useImport } from '@/store/importer'
 import { db, useQuery } from '@/store/db'
 
 export function App() {
@@ -39,6 +40,7 @@ export function App() {
         if (action === 'about') setAboutOpen(true)
         else if (action === 'new:cv') void requestCreate('cv')
         else if (action === 'new:letter') void requestCreate('cover_letter')
+        else if (action === 'import') void useImport.getState().begin()
         else navigate(action.replace('navigate:', '') as Parameters<typeof navigate>[0])
       }),
     []

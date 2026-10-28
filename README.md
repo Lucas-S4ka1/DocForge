@@ -12,6 +12,7 @@ Alle Daten bleiben auf deinem Gerät. Keine Cloud, kein Account.
 
 - **Hub:** Schnellaktionen, zuletzt bearbeitete Dokumente, Quest-Fortschritt pro Bewerbung (z. B. „Foto fehlt“), Hinweise (Termine, Nachfassen, Backup), Statistik mit Wochenziel und Erfolgen
 - **Dokument-Editor:** Lebenslauf (4 Vorlagen), Anschreiben nach DIN 5008 (3 Vorlagen), Deckblatt, freie Dokumente – A4-Vorschau mit Zoom, Abschnitte per Drag & Drop, Schrift/Farbe/Ränder/Foto einstellbar, automatisches Speichern
+- **Import:** vorhandenen Lebenslauf oder ein Anschreiben aus Word (.docx), PDF oder Text einlesen – Kontaktdaten, Abschnitte, Stationen und das Bewerbungsfoto werden erkannt, eine Vorschau zeigt das Ergebnis, auf Wunsch in einer der Vorlagen; danach im Editor ergänzen (komplett offline)
 - **Export:** PDF (aus der A4-Vorschau) und DOCX (Word)
 - **KI-Befehlsleiste (optional):** Dokumente per Text-Befehl mit Claude bearbeiten, Änderungen als Rot/Grün-Vergleich prüfen und einzeln übernehmen, Stellenanzeigen-Abgleich
 - **Versionsverlauf:** jede Version wiederherstellbar
@@ -53,6 +54,7 @@ Alle Daten bleiben auf deinem Gerät. Keine Cloud, kein Account.
 ### Erste Schritte
 
 Archiv → Profil anlegen (oder „Beispieldaten laden“ zum Ausprobieren) → Hub → „Neuer Lebenslauf“.
+Schon einen Lebenslauf als Word/PDF? Hub → **„Importieren“** (Strg + O) – das Profil wird dabei automatisch angelegt.
 Eine ausführliche bebilderte Anleitung liegt unter [`docs/DocForge-Anleitung.pdf`](docs/DocForge-Anleitung.pdf).
 
 ---
@@ -125,6 +127,7 @@ Eine `.dfdb`-Datei ist **eine einzige Datei** mit der kompletten Datenbank und a
 | Kamera: „Kamera-Fehler“ | Die Webcam ist evtl. in Teams/Zoom geöffnet – dort schließen und erneut starten. |
 | Hintergrund-Erkennung nicht verfügbar | Sehr alte/blockierte Grafiktreiber – Fotos funktionieren trotzdem ohne Hintergrund-Effekt. |
 | KI: „Der API-Key wurde abgelehnt“ | Key in der Anthropic Console prüfen bzw. neu erzeugen und in den Einstellungen neu eintragen. |
+| Import: „kein Text gefunden“ | Eingescannte PDFs enthalten nur Bilder – die Word-Datei oder ein direkt aus Word erzeugtes PDF verwenden. Alte `.doc`-Dateien in Word als `.docx` speichern. |
 | Update wird nicht gefunden | Auf GitHub muss ein **veröffentlichter** Release mit `latest.yml` liegen (siehe unten). |
 
 ---
@@ -200,11 +203,12 @@ wird vorher ein Backup angelegt. Ein Test prüft den Weg von einer 1.x-Datenbank
 design/                 Design-Screens aus Claude Design (Referenz)
 docs/                   Bebilderte Anleitung (PDF)
 src/
-  shared/               Gemeinsame Typen & Logik: IPC-Vertrag, Modelle, Dokumentmodell, KI-Änderungen
+  shared/               Gemeinsame Typen & Logik: IPC-Vertrag, Modelle, Dokumentmodell, KI-Änderungen, Import-Erkennung
   main/                 Electron Main-Process
     db/                 SQLite: Verbindung, Migrationen, Repositories, Backup, Service
     export/             PDF (printToPDF) und DOCX
     ai/                 Claude API, verschlüsselte Key-Ablage, Prompt
+    import/             Text + Foto aus Word (mammoth) und PDF (unpdf) lesen
     updater.ts          Auto-Update (electron-updater)
   preload/              Sichere Brücke → window.docforge
   renderer/
@@ -221,6 +225,7 @@ src/
 tests/
   main/                 Unit-/Integrationstests (Vitest, in der Electron-Runtime)
   e2e/                  E2E-Tests (Playwright + Electron)
+  fixtures/             Testdateien für den Import (erfundene Personen)
 .github/workflows/      CI (Tests bei jedem Push) und Release (Windows + macOS)
 ```
 
